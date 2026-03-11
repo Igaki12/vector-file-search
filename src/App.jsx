@@ -29,6 +29,17 @@ async function readTextFile(file) {
   return file.text();
 }
 
+async function fetchSamplePdf(fileName) {
+  const response = await fetch(`${import.meta.env.BASE_URL}sample-files/${encodeURIComponent(fileName)}`);
+
+  if (!response.ok) {
+    throw new Error(`サンプル PDF の取得に失敗しました: ${fileName}`);
+  }
+
+  const blob = await response.blob();
+  return new File([blob], fileName, { type: "application/pdf" });
+}
+
 async function buildRecords(file) {
   if (file.type === "application/pdf" || file.name.toLowerCase().endsWith(".pdf")) {
     return extractPdfPages(file);
@@ -80,11 +91,13 @@ export default function App() {
   const [apiKey, setApiKey] = useState(() => localStorage.getItem(API_KEY_STORAGE) ?? "");
   const [apiStatus, setApiStatus] = useState({ state: "idle", message: "" });
   const [records, setRecords] = useState([]);
-  const [files, setFiles] = useState([]);
-  const [indexStatus, setIndexStatus] = useState({ state: "idle", message: "" });
+  const [libraryStatus, setLibraryStatus] = useState({ state: "idle", message: "" });
   const [query, setQuery] = useState("");
   const [results, setResults] = useState([]);
   const [searchStatus, setSearchStatus] = useState({ state: "idle", message: "" });
+  const [extraFiles, setExtraFiles] = useState([]);
+  const [textDraft, setTextDraft] = useState("");
+  const [storageStatus, setStorageStatus] = useState({ state: "idle", message: "" });
 
   useEffect(() => {
     if (apiKey) {
@@ -98,8 +111,10 @@ export default function App() {
     const pdfPages = records.filter((record) => record.kind === "pdf-page").length;
     const textSegments = records.filter((record) => record.kind === "text-segment").length;
 
-    return { pdfPages, textSegments };
+    return { pdfPages, textSegments, files: new Set(records.map((record) => record.fileName)).size };
   }, [records]);
+
+  const topResult = results[0]?.bestMatch ?? null;
 
   async function handleApiVerify() {
     if (!apiKey.trim()) {
@@ -117,68 +132,143 @@ export default function App() {
     }
   }
 
-  function handleFileChange(event) {
+  async function embedUnits(units, nextStatus) {
+    const embedded = [];
+
+    for (const unit of units) {
+      nextStatus(`${unit.label} のベクトルを生成しています...`);
+
+      const embedding = await embedText({
+        apiKey: apiKey.trim(),
+        text: unit.text || `${unit.fileName} ${unit.pageNumber ?? ""}`.trim(),
+        outputDimensionality: OUTPUT_DIMENSIONALITY,
+        taskType: "RETRIEVAL_DOCUMENT"
+      });
+
+      embedded.push({
+        ...unit,
+        embedding
+      });
+    }
+
+    return embedded;
+  }
+
+  async function handleLoadSampleLibrary() {
+    if (!apiKey.trim()) {
+      setLibraryStatus({ state: "error", message: "先に API キーを設定してください。" });
+      return;
+    }
+
+    setLibraryStatus({ state: "loading", message: "デモ用ストレージを読み込んでいます..." });
+
+    try {
+      const sampleFiles = [];
+
+      for (const fileName of SAMPLE_FILES) {
+        sampleFiles.push(await fetchSamplePdf(fileName));
+      }
+
+      const units = [];
+
+      for (const file of sampleFiles) {
+        const fileUnits = await buildRecords(file);
+        units.push(...fileUnits);
+      }
+
+      const embedded = await embedUnits(units, (message) => {
+        setLibraryStatus({ state: "loading", message });
+      });
+
+      setRecords(embedded);
+      setResults([]);
+      setLibraryStatus({
+        state: "success",
+        message: `${SAMPLE_FILES.length}件のサンプル PDF を読み込み、${embedded.length}ページをベクトル化しました。`
+      });
+    } catch (error) {
+      setLibraryStatus({ state: "error", message: error.message });
+    }
+  }
+
+  function handleExtraFileChange(event) {
     const selected = Array.from(event.target.files ?? []);
-    setFiles(selected);
-    setResults([]);
-    setRecords([]);
-    setIndexStatus({
+    setExtraFiles(selected);
+    setStorageStatus({
       state: "idle",
-      message: selected.length ? `${selected.length}件のファイルを読み込み待ちです。` : ""
+      message: selected.length ? `${selected.length}件の追加ファイルを選択しました。` : ""
     });
   }
 
-  async function handleIndexFiles() {
+  async function handleAddFilesToStorage() {
     if (!apiKey.trim()) {
-      setIndexStatus({ state: "error", message: "先に API キーを設定してください。" });
+      setStorageStatus({ state: "error", message: "先に API キーを設定してください。" });
       return;
     }
 
-    if (!files.length) {
-      setIndexStatus({ state: "error", message: "テキストまたは PDF ファイルを追加してください。" });
+    if (!extraFiles.length) {
+      setStorageStatus({ state: "error", message: "追加するファイルを選択してください。" });
       return;
     }
-
-    setIndexStatus({ state: "loading", message: "ファイルを解析しています..." });
 
     try {
-      const extractedRecords = [];
+      const units = [];
 
-      for (const file of files) {
-        const units = await buildRecords(file);
+      setStorageStatus({ state: "loading", message: "追加ファイルを解析しています..." });
 
-        if (!units.length) {
+      for (const file of extraFiles) {
+        const fileUnits = await buildRecords(file);
+        if (!fileUnits.length) {
           continue;
         }
-
-        for (const unit of units) {
-          setIndexStatus({
-            state: "loading",
-            message: `${unit.label} のベクトルを生成しています...`
-          });
-
-          const embedding = await embedText({
-            apiKey: apiKey.trim(),
-            text: unit.text || `${unit.fileName} ${unit.pageNumber ?? ""}`.trim(),
-            outputDimensionality: OUTPUT_DIMENSIONALITY,
-            taskType: "RETRIEVAL_DOCUMENT"
-          });
-
-          extractedRecords.push({
-            ...unit,
-            embedding
-          });
-        }
+        units.push(...fileUnits);
       }
 
-      setRecords(extractedRecords);
+      const embedded = await embedUnits(units, (message) => {
+        setStorageStatus({ state: "loading", message });
+      });
+
+      setRecords((current) => [...current, ...embedded]);
       setResults([]);
-      setIndexStatus({
+      setExtraFiles([]);
+      setStorageStatus({
         state: "success",
-        message: `${extractedRecords.length}件の検索単位をベクトル化しました。`
+        message: `${embedded.length}件の検索単位をストレージに追加しました。`
       });
     } catch (error) {
-      setIndexStatus({ state: "error", message: error.message });
+      setStorageStatus({ state: "error", message: error.message });
+    }
+  }
+
+  async function handleAddTextToStorage() {
+    if (!apiKey.trim()) {
+      setStorageStatus({ state: "error", message: "先に API キーを設定してください。" });
+      return;
+    }
+
+    if (!textDraft.trim()) {
+      setStorageStatus({ state: "error", message: "追加するテキストを入力してください。" });
+      return;
+    }
+
+    try {
+      const pseudoFile = { name: `pasted-note-${Date.now()}.txt` };
+      const units = makeTextRecords(pseudoFile, textDraft.trim());
+
+      setStorageStatus({ state: "loading", message: "テキストをストレージに追加しています..." });
+      const embedded = await embedUnits(units, (message) => {
+        setStorageStatus({ state: "loading", message });
+      });
+
+      setRecords((current) => [...current, ...embedded]);
+      setResults([]);
+      setTextDraft("");
+      setStorageStatus({
+        state: "success",
+        message: `${embedded.length}件のテキストセグメントをストレージに追加しました。`
+      });
+    } catch (error) {
+      setStorageStatus({ state: "error", message: error.message });
     }
   }
 
@@ -216,19 +306,19 @@ export default function App() {
       <header className="hero">
         <div>
           <p className="eyebrow">Vector File Search Demo</p>
-          <h1>検索フレーズに最も近い PDF ページを、直感的に見つける。</h1>
+          <h1>すでに並べた資料の中から、最も近い PDF ページを見つける。</h1>
           <p className="hero-copy">
-            テキストと PDF を対象に、`gemini-embedding-2-preview` と一般的な RAG 方式に近い
-            ハイブリッド検索で関連度を数値化します。
+            デモ用ストレージとして並べた PDF と、任意で追加したテキストを対象に、
+            `gemini-embedding-2-preview` と一般的な RAG に近いハイブリッド検索で関連度を数値化します。
           </p>
         </div>
         <div className="hero-panel">
-          <p>初期版の前提</p>
+          <p>この画面でできること</p>
           <ul>
-            <li>API キーのみで開始</li>
-            <li>テキストと PDF のみ</li>
+            <li>先に用意した PDF を対象に検索</li>
             <li>PDF はページ単位でスコア化</li>
-            <li>API キーは localStorage にのみ保持</li>
+            <li>必要なら下部から資料を追加</li>
+            <li>API キーは localStorage に保持</li>
           </ul>
         </div>
       </header>
@@ -260,35 +350,24 @@ export default function App() {
         <section className="card section-card">
           <div className="section-head">
             <span className="step">STEP 2</span>
-            <h2>ファイル投入</h2>
+            <h2>検索ストレージを準備</h2>
           </div>
           <p className="section-copy">
-            `.txt` と `.pdf` を受け付けます。PDF はページ単位、テキストはセグメント単位で検索対象を作ります。
+            まずはこのリポジトリに並べてあるサンプル PDF を検索対象として読み込みます。追加の資料登録はページ下部のオプションから行えます。
           </p>
-          <label className="upload-box">
-            <input type="file" accept=".txt,.pdf" multiple onChange={handleFileChange} />
-            <span>クリックしてファイルを選択</span>
-            <small>または sample-files の PDF を手元で選んでください</small>
-          </label>
-          <div className="file-list">
-            {files.length ? (
-              files.map((file) => (
-                <div className="file-chip" key={file.name}>
-                  <strong>{file.name}</strong>
-                  <span>{file.type || "text/plain"}</span>
-                </div>
-              ))
-            ) : (
-              <p className="muted">まだファイルは追加されていません。</p>
-            )}
-          </div>
           <div className="button-row">
-            <button className="primary-button" type="button" onClick={handleIndexFiles}>
-              ベクトル化を開始
+            <button className="primary-button" type="button" onClick={handleLoadSampleLibrary}>
+              サンプルストレージを読み込む
             </button>
           </div>
-          <p className={`status ${indexStatus.state}`}>{indexStatus.message || "ファイル追加後にベクトル化を実行します。"}</p>
+          <p className={`status ${libraryStatus.state}`}>
+            {libraryStatus.message || "sample-files にある PDF をページ単位でベクトル化します。"}
+          </p>
           <div className="meta-grid">
+            <div className="metric">
+              <span>Indexed files</span>
+              <strong>{indexedSummary.files}</strong>
+            </div>
             <div className="metric">
               <span>PDF pages</span>
               <strong>{indexedSummary.pdfPages}</strong>
@@ -300,9 +379,9 @@ export default function App() {
           </div>
         </section>
 
-        <section className="card section-card">
+        <section className="card section-card search-card">
           <div className="section-head">
-            <span className="step">STEP 3</span>
+            <span className="step">SEARCH</span>
             <h2>検索</h2>
           </div>
           <p className="section-copy">完全一致の語句一致とベクトル類似度を組み合わせて関連度を計算します。</p>
@@ -326,10 +405,10 @@ export default function App() {
         <aside className="card side-card">
           <div className="section-head">
             <span className="step">DEMO</span>
-            <h2>同梱サンプル</h2>
+            <h2>検索対象</h2>
           </div>
           <p className="section-copy">
-            GitHub Pages で公開したあとも `sample-files` をそのまま配信します。打ち合わせ用のサンプル PDF として利用できます。
+            初期状態では、ここに並んでいるサンプル PDF を検索対象として読み込みます。必要なら結果一覧の下から追加資料を登録できます。
           </p>
           <div className="sample-list">
             {SAMPLE_FILES.map((fileName) => (
@@ -346,6 +425,16 @@ export default function App() {
           <span className="step">RESULTS</span>
           <h2>関連度ランキング</h2>
         </div>
+        {topResult ? (
+          <div className="spotlight">
+            <div>
+              <span className="spotlight-label">Top Match</span>
+              <h3>{topResult.fileName}</h3>
+              <p>{topResult.pageNumber ? `${topResult.pageNumber}ページが最も近い候補です。` : "最も近いテキストセグメントです。"}</p>
+            </div>
+            <div className="spotlight-score">{formatScore(topResult.scores.finalScore)}</div>
+          </div>
+        ) : null}
         {results.length ? (
           <div className="result-list">
             {results.map((result, index) => (
@@ -381,9 +470,64 @@ export default function App() {
         ) : (
           <div className="empty-state">
             <h3>まだ検索結果はありません。</h3>
-            <p>API キー設定、ファイルのベクトル化、検索フレーズ入力の順に進めると結果が表示されます。</p>
+            <p>API キー確認後にサンプルストレージを読み込み、検索フレーズを入力すると結果が表示されます。</p>
           </div>
         )}
+      </section>
+
+      <section className="card storage-card">
+        <div className="section-head">
+          <span className="step">OPTIONAL</span>
+          <h2>ストレージに資料を追加</h2>
+        </div>
+        <p className="section-copy">
+          ここはオプションです。既存の検索対象に対して、追加の `.txt` / `.pdf` や短いテキストメモを登録できます。
+        </p>
+        <div className="storage-layout">
+          <div>
+            <label className="upload-box compact">
+              <input type="file" accept=".txt,.pdf" multiple onChange={handleExtraFileChange} />
+              <span>追加ファイルを選択</span>
+              <small>選択後にストレージへ追加します</small>
+            </label>
+            <div className="file-list">
+              {extraFiles.length ? (
+                extraFiles.map((file) => (
+                  <div className="file-chip" key={file.name}>
+                    <strong>{file.name}</strong>
+                    <span>{file.type || "text/plain"}</span>
+                  </div>
+                ))
+              ) : (
+                <p className="muted">追加ファイルは未選択です。</p>
+              )}
+            </div>
+            <div className="button-row">
+              <button className="primary-button" type="button" onClick={handleAddFilesToStorage}>
+                ファイルを追加
+              </button>
+            </div>
+          </div>
+          <div>
+            <label className="field">
+              <span>テキストを直接追加</span>
+              <textarea
+                rows="7"
+                placeholder="検索対象に加えたいメモや説明文を入力"
+                value={textDraft}
+                onChange={(event) => setTextDraft(event.target.value)}
+              />
+            </label>
+            <div className="button-row">
+              <button className="primary-button" type="button" onClick={handleAddTextToStorage}>
+                テキストを追加
+              </button>
+            </div>
+          </div>
+        </div>
+        <p className={`status ${storageStatus.state}`}>
+          {storageStatus.message || "必要な場合のみ、ここから検索対象を追加してください。"}
+        </p>
       </section>
     </div>
   );

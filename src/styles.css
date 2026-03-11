@@ -130,6 +130,17 @@ a {
   margin-top: 18px;
 }
 
+.search-card {
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.95), rgba(248, 251, 255, 0.92)),
+    linear-gradient(135deg, rgba(207, 225, 240, 0.24), transparent);
+}
+
+.storage-card {
+  margin-top: 18px;
+  padding: 22px;
+}
+
 .section-head {
   display: flex;
   align-items: center;
@@ -182,6 +193,10 @@ a {
   cursor: pointer;
   margin-top: 16px;
   border-style: dashed;
+}
+
+.upload-box.compact {
+  min-height: 126px;
 }
 
 .upload-box input {
@@ -264,7 +279,7 @@ a {
 
 .meta-grid {
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 12px;
   margin-top: 14px;
 }
@@ -291,6 +306,43 @@ a {
 .result-list {
   display: grid;
   gap: 14px;
+}
+
+.spotlight {
+  display: flex;
+  justify-content: space-between;
+  gap: 20px;
+  align-items: center;
+  padding: 18px 20px;
+  margin: 6px 0 16px;
+  border-radius: 20px;
+  border: 1px solid #d8e1eb;
+  background: linear-gradient(135deg, rgba(240, 246, 252, 0.92), rgba(255, 255, 255, 0.92));
+}
+
+.spotlight-label {
+  display: inline-block;
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: #42637f;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.spotlight h3 {
+  margin: 6px 0;
+}
+
+.spotlight p {
+  margin: 0;
+  color: #60707f;
+}
+
+.spotlight-score {
+  font-size: clamp(1.8rem, 4vw, 2.6rem);
+  font-weight: 700;
+  color: #17385d;
+  white-space: nowrap;
 }
 
 .result-card {
@@ -363,6 +415,13 @@ a {
   background: #fbfdff;
 }
 
+.storage-layout {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 18px;
+  margin-top: 12px;
+}
+
 @media (max-width: 1080px) {
   .hero,
   .layout {
@@ -371,6 +430,10 @@ a {
 
   .side-card {
     grid-column: auto;
+  }
+
+  .storage-layout {
+    grid-template-columns: 1fr;
   }
 }
 
@@ -403,5 +466,14 @@ a {
   .score-stack {
     text-align: left;
     min-width: 0;
+  }
+
+  .meta-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .spotlight {
+    flex-direction: column;
+    align-items: flex-start;
   }
 }
