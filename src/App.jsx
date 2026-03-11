@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { verifyApiKey, embedText } from "./lib/googleEmbeddings.js";
 import { extractPdfPages } from "./lib/pdf.js";
 import { splitTextIntoSegments, combinedScore, summarizeText } from "./lib/search.js";
