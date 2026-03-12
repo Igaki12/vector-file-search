@@ -15,7 +15,7 @@ npm run dev
 npm run build
 ```
 
-ビルド成果物は [`docs/`](/Users/igaki/Documents/GitHub/vector-file-search/docs) に出力され、GitHub Pages でそのまま配信できる構成です。`sample-files/` の PDF も `docs/sample-files/` にコピーされます。
+ビルド成果物は [`docs/`](/Users/igaki/Documents/GitHub/vector-file-search/docs) に出力され、GitHub Pages でそのまま配信できる構成です。サンプル PDF は [`sample-files/`](/Users/igaki/Documents/GitHub/vector-file-search/sample-files) を元データとして管理し、ビルド時に `docs/sample-files/` へコピーされます。
 
 ## 仕様メモ
 
