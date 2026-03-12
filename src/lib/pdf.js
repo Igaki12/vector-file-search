@@ -7,7 +7,6 @@ async function loadPdfRuntime() {
       import("pdfjs-dist/build/pdf.worker.min.mjs?url")
     ]).then(([pdfjs, workerModule]) => {
       pdfjs.GlobalWorkerOptions.workerSrc = workerModule.default;
-      pdfjs.setVerbosityLevel(pdfjs.VerbosityLevel.ERRORS);
       return pdfjs;
     });
   }
@@ -26,10 +25,7 @@ function joinTextItems(items) {
 export async function extractPdfPages(file, options = {}) {
   const pdfjs = await loadPdfRuntime();
   const buffer = await file.arrayBuffer();
-  const pdf = await pdfjs.getDocument({
-    data: buffer,
-    verbosity: pdfjs.VerbosityLevel.ERRORS
-  }).promise;
+  const pdf = await pdfjs.getDocument({ data: buffer }).promise;
   const pages = [];
   const source = options.source ?? "user";
 
