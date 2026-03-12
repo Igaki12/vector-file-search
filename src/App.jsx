@@ -5,6 +5,7 @@ import { splitTextIntoSegments, combinedScore, summarizeText } from "./lib/searc
 
 const API_KEY_STORAGE = "vector-file-search-api-key";
 const OUTPUT_DIMENSIONALITY = 3072;
+const APP_ICON_PATH = `${import.meta.env.BASE_URL}icon.png`;
 const SAMPLE_FILES = [
   "2021年度 形成外科.pdf",
   "2022年度 形成外科.pdf",
@@ -306,10 +307,15 @@ export default function App() {
       <header className="hero">
         <div className="hero-copy-block">
           <p className="eyebrow">Vector File Search Demo</p>
-          <h1>保存済みの資料から、近いページをすぐ見つける。</h1>
-          <p className="hero-copy">
-            PDF とテキストを対象に、ベクトル検索と語句一致を組み合わせて関連度順に表示します。
-          </p>
+          <div className="hero-title-row">
+            <img className="hero-icon" src={APP_ICON_PATH} alt="Vector File Search アイコン" />
+            <div className="hero-title-copy">
+              <h1>保存済みの資料から、近いページをすぐ見つける。</h1>
+              <p className="hero-copy">
+                PDF とテキストを対象に、ベクトル検索と語句一致を組み合わせて関連度順に表示します。
+              </p>
+            </div>
+          </div>
         </div>
         <div className="summary-row">
           <div className="summary-chip">
@@ -377,8 +383,8 @@ export default function App() {
 
       <section className="results card">
         <div className="section-head">
-          <span className="step">RESULTS</span>
-          <h2>関連度ランキング</h2>
+          <span className="step results-step">RESULTS</span>
+          <h2 className="results-title">関連度ランキング</h2>
         </div>
         {topResult ? (
           <div className="spotlight">
@@ -486,28 +492,30 @@ export default function App() {
       </section>
 
       <section className="card side-card">
-          <div className="section-head">
-            <span className="step">OPTIONAL</span>
-            <h2>サンプルを読み込む</h2>
-          </div>
-          <p className="section-copy">
-            必要な場合だけ、既定のサンプル PDF を検索対象に追加します。
-          </p>
-          <div className="button-row">
-            <button className="primary-button" type="button" onClick={handleLoadSampleLibrary}>
-              サンプル PDF を読み込む
-            </button>
-          </div>
-          <div className="sample-list">
-            {SAMPLE_FILES.map((fileName) => (
-              <a className="sample-link" href={getSampleFileHref(fileName)} key={fileName} target="_blank" rel="noreferrer">
-                {fileName}
-              </a>
-            ))}
-          </div>
-          <p className={`status ${libraryStatus.state}`}>
-            {libraryStatus.message || "必要なときだけ読み込んでください。"}
-          </p>
+        <div className="section-head">
+          <span className="step">OPTIONAL</span>
+          <h2>サンプルを読み込む</h2>
+        </div>
+        <p className="section-copy">
+          必要な場合だけ、既定のサンプル PDF を検索対象に追加します。
+        </p>
+
+        <div className="sample-list">
+          {SAMPLE_FILES.map((fileName) => (
+            <a className="sample-link" href={getSampleFileHref(fileName)} key={fileName} target="_blank" rel="noreferrer">
+              {fileName}
+            </a>
+          ))}
+        </div>
+        <div className="button-row">
+          <button className="primary-button" type="button" onClick={handleLoadSampleLibrary}>
+            サンプル PDF を読み込む
+          </button>
+        </div>
+        <p className={`status ${libraryStatus.state}`}>
+          {libraryStatus.message || "必要なときだけ読み込んでください。"}
+        </p>
+
       </section>
     </div>
   );

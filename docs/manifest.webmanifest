@@ -1,0 +1,18 @@
+{
+  "name": "Vector File Search Demo",
+  "short_name": "Vector Search",
+  "description": "PDF とテキストをベクトル検索で関連度順に並べるデモアプリ",
+  "start_url": "/vector-file-search/",
+  "scope": "/vector-file-search/",
+  "display": "standalone",
+  "background_color": "#f6f8fb",
+  "theme_color": "#173b61",
+  "icons": [
+    {
+      "src": "/vector-file-search/icon.png",
+      "sizes": "1024x1024",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}

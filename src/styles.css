@@ -54,6 +54,26 @@ a {
   gap: 10px;
 }
 
+.hero-title-row {
+  display: grid;
+  grid-template-columns: clamp(104px, 13vw, 136px) minmax(0, 1fr);
+  gap: 18px;
+  align-items: center;
+}
+
+.hero-icon {
+  width: 100%;
+  max-width: 128px;
+  height: auto;
+  border-radius: 24px;
+  box-shadow: 0 12px 30px rgba(80, 99, 120, 0.14);
+}
+
+.hero-title-copy {
+  display: grid;
+  gap: 10px;
+}
+
 .eyebrow,
 .step {
   display: inline-flex;
@@ -88,7 +108,7 @@ a {
 
 .hero-copy {
   margin: 0;
-  max-width: 48rem;
+  max-width: 42rem;
 }
 
 .summary-row {
@@ -290,6 +310,40 @@ a {
   margin-top: 16px;
 }
 
+.results {
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.97), rgba(244, 249, 255, 0.95)),
+    radial-gradient(circle at top right, rgba(190, 214, 235, 0.26), transparent 34%);
+  border-color: rgba(194, 211, 228, 0.98);
+  box-shadow: 0 16px 36px rgba(72, 97, 122, 0.1);
+}
+
+.results .section-head {
+  margin-bottom: 12px;
+}
+
+.results .step {
+  background: #e2edf8;
+  color: #355675;
+}
+
+.results-step {
+  background: linear-gradient(135deg, #d7e9fb 0%, #bfdcf5 50%, #dcecff 100%);
+  color: #1f5683;
+  border: 1px solid rgba(132, 174, 210, 0.7);
+  box-shadow: 0 6px 16px rgba(69, 102, 134, 0.14);
+}
+
+.results-title {
+  font-size: clamp(1.4rem, 2.3vw, 1.75rem);
+  letter-spacing: -0.02em;
+  background: linear-gradient(90deg, #163b61 0%, #2f6a9a 55%, #4f88b8 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  text-shadow: 0 10px 24px rgba(77, 124, 167, 0.14);
+}
+
 .spotlight {
   display: flex;
   justify-content: space-between;
@@ -298,8 +352,8 @@ a {
   padding: 18px 20px;
   margin: 4px 0 16px;
   border-radius: 18px;
-  border: 1px solid #dde5ee;
-  background: #f8fbfe;
+  border: 1px solid #d5e2ee;
+  background: linear-gradient(180deg, #fbfdff 0%, #f1f7fc 100%);
 }
 
 .spotlight-label {
@@ -329,8 +383,8 @@ a {
   gap: 14px;
   padding: 16px;
   border-radius: 18px;
-  border: 1px solid #e0e6ee;
-  background: #fff;
+  border: 1px solid #dce5ee;
+  background: rgba(255, 255, 255, 0.9);
 }
 
 .result-rank {
@@ -387,10 +441,10 @@ a {
 
 .empty-state {
   border-radius: 18px;
-  border: 1px dashed #d3dde8;
+  border: 1px dashed #c7d6e5;
   padding: 28px 18px;
   text-align: center;
-  background: #fbfdff;
+  background: rgba(250, 253, 255, 0.92);
 }
 
 .storage-layout {
@@ -409,6 +463,15 @@ a {
   .summary-row,
   .storage-layout {
     grid-template-columns: 1fr;
+  }
+
+  .hero-title-row {
+    grid-template-columns: 1fr;
+    gap: 14px;
+  }
+
+  .hero-icon {
+    max-width: 96px;
   }
 
   .section-card,
