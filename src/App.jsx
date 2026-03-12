@@ -304,32 +304,36 @@ export default function App() {
   return (
     <div className="shell">
       <header className="hero">
-        <div>
+        <div className="hero-copy-block">
           <p className="eyebrow">Vector File Search Demo</p>
-          <h1>すでに並べた資料の中から、最も近い PDF ページを見つける。</h1>
+          <h1>保存済みの資料から、近いページをすぐ見つける。</h1>
           <p className="hero-copy">
-            デモ用ストレージとして並べた PDF と、任意で追加したテキストを対象に、
-            `gemini-embedding-2-preview` と一般的な RAG に近いハイブリッド検索で関連度を数値化します。
+            PDF とテキストを対象に、ベクトル検索と語句一致を組み合わせて関連度順に表示します。
           </p>
         </div>
-        <div className="hero-panel">
-          <p>この画面でできること</p>
-          <ul>
-            <li>先に用意した PDF を対象に検索</li>
-            <li>PDF はページ単位でスコア化</li>
-            <li>必要なら下部から資料を追加</li>
-            <li>API キーは localStorage に保持</li>
-          </ul>
+        <div className="summary-row">
+          <div className="summary-chip">
+            <span>ファイル</span>
+            <strong>{indexedSummary.files}</strong>
+          </div>
+          <div className="summary-chip">
+            <span>PDFページ</span>
+            <strong>{indexedSummary.pdfPages}</strong>
+          </div>
+          <div className="summary-chip">
+            <span>テキスト</span>
+            <strong>{indexedSummary.textSegments}</strong>
+          </div>
         </div>
       </header>
 
-      <main className="layout">
+      <main className="page-stack">
         <section className="card section-card">
           <div className="section-head">
             <span className="step">STEP 1</span>
             <h2>API キー</h2>
           </div>
-          <p className="section-copy">Google の API キーを入力し、接続確認を行ってからベクトル化を開始します。</p>
+          <p className="section-copy">ブラウザ内だけで保持します。</p>
           <label className="field">
             <span>API Key</span>
             <input
@@ -347,44 +351,12 @@ export default function App() {
           <p className={`status ${apiStatus.state}`}>{apiStatus.message || "キーはブラウザの localStorage にだけ保持します。"}</p>
         </section>
 
-        <section className="card section-card">
-          <div className="section-head">
-            <span className="step">STEP 2</span>
-            <h2>検索ストレージを準備</h2>
-          </div>
-          <p className="section-copy">
-            まずはこのリポジトリに並べてあるサンプル PDF を検索対象として読み込みます。追加の資料登録はページ下部のオプションから行えます。
-          </p>
-          <div className="button-row">
-            <button className="primary-button" type="button" onClick={handleLoadSampleLibrary}>
-              サンプルストレージを読み込む
-            </button>
-          </div>
-          <p className={`status ${libraryStatus.state}`}>
-            {libraryStatus.message || "sample-files にある PDF をページ単位でベクトル化します。"}
-          </p>
-          <div className="meta-grid">
-            <div className="metric">
-              <span>Indexed files</span>
-              <strong>{indexedSummary.files}</strong>
-            </div>
-            <div className="metric">
-              <span>PDF pages</span>
-              <strong>{indexedSummary.pdfPages}</strong>
-            </div>
-            <div className="metric">
-              <span>Text segments</span>
-              <strong>{indexedSummary.textSegments}</strong>
-            </div>
-          </div>
-        </section>
-
         <section className="card section-card search-card">
           <div className="section-head">
-            <span className="step">SEARCH</span>
+            <span className="step">STEP 2</span>
             <h2>検索</h2>
           </div>
-          <p className="section-copy">完全一致の語句一致とベクトル類似度を組み合わせて関連度を計算します。</p>
+          <p className="section-copy">検索対象が入っていれば、そのまま関連度順に並べ替えます。</p>
           <label className="field">
             <span>検索フレーズ</span>
             <textarea
@@ -401,23 +373,6 @@ export default function App() {
           </div>
           <p className={`status ${searchStatus.state}`}>{searchStatus.message || "検索フレーズを入力すると、最も近いファイルと PDF ページを表示します。"}</p>
         </section>
-
-        <aside className="card side-card">
-          <div className="section-head">
-            <span className="step">DEMO</span>
-            <h2>検索対象</h2>
-          </div>
-          <p className="section-copy">
-            初期状態では、ここに並んでいるサンプル PDF を検索対象として読み込みます。必要なら結果一覧の下から追加資料を登録できます。
-          </p>
-          <div className="sample-list">
-            {SAMPLE_FILES.map((fileName) => (
-              <a className="sample-link" href={getSampleFileHref(fileName)} key={fileName} target="_blank" rel="noreferrer">
-                {fileName}
-              </a>
-            ))}
-          </div>
-        </aside>
       </main>
 
       <section className="results card">
@@ -481,7 +436,7 @@ export default function App() {
           <h2>ストレージに資料を追加</h2>
         </div>
         <p className="section-copy">
-          ここはオプションです。既存の検索対象に対して、追加の `.txt` / `.pdf` や短いテキストメモを登録できます。
+          必要な場合のみ、`.txt` / `.pdf` や短いメモを追加します。
         </p>
         <div className="storage-layout">
           <div>
@@ -528,6 +483,31 @@ export default function App() {
         <p className={`status ${storageStatus.state}`}>
           {storageStatus.message || "必要な場合のみ、ここから検索対象を追加してください。"}
         </p>
+      </section>
+
+      <section className="card side-card">
+          <div className="section-head">
+            <span className="step">OPTIONAL</span>
+            <h2>サンプルを読み込む</h2>
+          </div>
+          <p className="section-copy">
+            必要な場合だけ、既定のサンプル PDF を検索対象に追加します。
+          </p>
+          <div className="button-row">
+            <button className="primary-button" type="button" onClick={handleLoadSampleLibrary}>
+              サンプル PDF を読み込む
+            </button>
+          </div>
+          <div className="sample-list">
+            {SAMPLE_FILES.map((fileName) => (
+              <a className="sample-link" href={getSampleFileHref(fileName)} key={fileName} target="_blank" rel="noreferrer">
+                {fileName}
+              </a>
+            ))}
+          </div>
+          <p className={`status ${libraryStatus.state}`}>
+            {libraryStatus.message || "必要なときだけ読み込んでください。"}
+          </p>
       </section>
     </div>
   );
