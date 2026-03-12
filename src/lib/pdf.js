@@ -7,6 +7,7 @@ async function loadPdfRuntime() {
       import("pdfjs-dist/build/pdf.worker.min.mjs?url")
     ]).then(([pdfjs, workerModule]) => {
       pdfjs.GlobalWorkerOptions.workerSrc = workerModule.default;
+      pdfjs.setVerbosityLevel(pdfjs.VerbosityLevel.ERRORS);
       return pdfjs;
     });
   }
@@ -22,11 +23,15 @@ function joinTextItems(items) {
     .trim();
 }
 
-export async function extractPdfPages(file) {
+export async function extractPdfPages(file, options = {}) {
   const pdfjs = await loadPdfRuntime();
   const buffer = await file.arrayBuffer();
-  const pdf = await pdfjs.getDocument({ data: buffer }).promise;
+  const pdf = await pdfjs.getDocument({
+    data: buffer,
+    verbosity: pdfjs.VerbosityLevel.ERRORS
+  }).promise;
   const pages = [];
+  const source = options.source ?? "user";
 
   for (let pageNumber = 1; pageNumber <= pdf.numPages; pageNumber += 1) {
     const page = await pdf.getPage(pageNumber);
@@ -38,6 +43,7 @@ export async function extractPdfPages(file) {
       fileName: file.name,
       pageNumber,
       kind: "pdf-page",
+      source,
       text,
       label: `${file.name} / ${pageNumber}ページ`
     });

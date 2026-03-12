@@ -18,12 +18,13 @@ const SAMPLE_FILES = [
   "2025年度形成外科.pdf"
 ];
 
-function makeTextRecords(file, text) {
+function makeTextRecords(file, text, source = "user") {
   return splitTextIntoSegments(text).map((segment, index) => ({
     id: `${file.name}-segment-${index + 1}`,
     fileName: file.name,
     pageNumber: null,
     kind: "text-segment",
+    source,
     text: segment,
     label: `${file.name} / セグメント ${index + 1}`
   }));
@@ -44,13 +45,15 @@ async function fetchSamplePdf(fileName) {
   return new File([blob], fileName, { type: "application/pdf" });
 }
 
-async function buildRecords(file) {
+async function buildRecords(file, options = {}) {
+  const source = options.source ?? "user";
+
   if (file.type === "application/pdf" || file.name.toLowerCase().endsWith(".pdf")) {
-    return extractPdfPages(file);
+    return extractPdfPages(file, { source });
   }
 
   const text = await readTextFile(file);
-  return makeTextRecords(file, text);
+  return makeTextRecords(file, text, source);
 }
 
 function formatScore(value) {
@@ -120,20 +123,14 @@ export default function App() {
 
   const topResult = results[0]?.bestMatch ?? null;
 
-  async function handleApiVerify() {
-    if (!apiKey.trim()) {
-      setApiStatus({ state: "error", message: "API キーを入力してください。" });
-      return;
+  function mergeRecords(current, incoming) {
+    const next = new Map(current.map((record) => [record.id, record]));
+
+    for (const record of incoming) {
+      next.set(record.id, record);
     }
 
-    setApiStatus({ state: "loading", message: "接続確認中..." });
-
-    try {
-      await verifyApiKey(apiKey.trim());
-      setApiStatus({ state: "success", message: "接続確認に成功しました。" });
-    } catch (error) {
-      setApiStatus({ state: "error", message: error.message });
-    }
+    return Array.from(next.values());
   }
 
   async function embedUnits(units, nextStatus) {
@@ -158,40 +155,65 @@ export default function App() {
     return embedded;
   }
 
-  async function handleLoadSampleLibrary() {
+  async function loadSampleLibraryIntoStorage() {
+    const existingSampleRecords = records.filter((record) => record.source === "sample");
+
+    if (existingSampleRecords.length) {
+      setLibraryStatus({
+        state: "success",
+        message: `${SAMPLE_FILES.length}件のサンプル PDF は読み込み済みです。`
+      });
+      return { addedRecords: [], reused: true };
+    }
+
+    setLibraryStatus({ state: "loading", message: "サンプル PDF を解析しています..." });
+
+    const sampleFiles = [];
+
+    for (const fileName of SAMPLE_FILES) {
+      sampleFiles.push(await fetchSamplePdf(fileName));
+    }
+
+    const units = [];
+
+    for (const file of sampleFiles) {
+      const fileUnits = await buildRecords(file, { source: "sample" });
+      units.push(...fileUnits);
+    }
+
+    const embedded = await embedUnits(units, (message) => {
+      setLibraryStatus({ state: "loading", message });
+    });
+
+    setRecords((current) => mergeRecords(current, embedded));
+    setResults([]);
+    setLibraryStatus({
+      state: "success",
+      message: `${SAMPLE_FILES.length}件のサンプル PDF を自動で読み込み、${embedded.length}ページをベクトル化しました。`
+    });
+
+    return { addedRecords: embedded, reused: false };
+  }
+
+  async function handleApiVerify() {
     if (!apiKey.trim()) {
-      setLibraryStatus({ state: "error", message: "先に API キーを設定してください。" });
+      setApiStatus({ state: "error", message: "API キーを入力してください。" });
       return;
     }
 
-    setLibraryStatus({ state: "loading", message: "デモ用ストレージを読み込んでいます..." });
+    setApiStatus({ state: "loading", message: "接続確認とサンプル準備を進めています..." });
 
     try {
-      const sampleFiles = [];
+      await verifyApiKey(apiKey.trim());
 
-      for (const fileName of SAMPLE_FILES) {
-        sampleFiles.push(await fetchSamplePdf(fileName));
-      }
+      const { addedRecords, reused } = await loadSampleLibraryIntoStorage();
+      const sampleMessage = reused
+        ? "サンプル PDF は既にベクトル化済みです。"
+        : `${addedRecords.length}件の検索単位をサンプルから準備しました。`;
 
-      const units = [];
-
-      for (const file of sampleFiles) {
-        const fileUnits = await buildRecords(file);
-        units.push(...fileUnits);
-      }
-
-      const embedded = await embedUnits(units, (message) => {
-        setLibraryStatus({ state: "loading", message });
-      });
-
-      setRecords(embedded);
-      setResults([]);
-      setLibraryStatus({
-        state: "success",
-        message: `${SAMPLE_FILES.length}件のサンプル PDF を読み込み、${embedded.length}ページをベクトル化しました。`
-      });
+      setApiStatus({ state: "success", message: `接続確認に成功しました。${sampleMessage}` });
     } catch (error) {
-      setLibraryStatus({ state: "error", message: error.message });
+      setApiStatus({ state: "error", message: error.message });
     }
   }
 
@@ -221,7 +243,7 @@ export default function App() {
       setStorageStatus({ state: "loading", message: "追加ファイルを解析しています..." });
 
       for (const file of extraFiles) {
-        const fileUnits = await buildRecords(file);
+        const fileUnits = await buildRecords(file, { source: "user" });
         if (!fileUnits.length) {
           continue;
         }
@@ -257,7 +279,7 @@ export default function App() {
 
     try {
       const pseudoFile = { name: `pasted-note-${Date.now()}.txt` };
-      const units = makeTextRecords(pseudoFile, textDraft.trim());
+      const units = makeTextRecords(pseudoFile, textDraft.trim(), "user");
 
       setStorageStatus({ state: "loading", message: "テキストをストレージに追加しています..." });
       const embedded = await embedUnits(units, (message) => {
@@ -434,7 +456,7 @@ export default function App() {
         ) : (
           <div className="empty-state">
             <h3>まだ検索結果はありません。</h3>
-            <p>API キー確認後にサンプルストレージを読み込み、検索フレーズを入力すると結果が表示されます。</p>
+            <p>API キー確認後にサンプル PDF を自動準備します。検索フレーズを入力すると結果が表示されます。</p>
           </div>
         )}
       </section>
@@ -500,7 +522,7 @@ export default function App() {
           <h2>サンプルを読み込む</h2>
         </div>
         <p className="section-copy">
-          必要な場合だけ、既定のサンプル PDF を検索対象に追加します。
+          既定のサンプル PDF は API 接続確認時に自動でベクトル化されます。
         </p>
 
         <div className="sample-list">
@@ -510,13 +532,8 @@ export default function App() {
             </a>
           ))}
         </div>
-        <div className="button-row">
-          <button className="primary-button" type="button" onClick={handleLoadSampleLibrary}>
-            サンプル PDF を読み込む
-          </button>
-        </div>
         <p className={`status ${libraryStatus.state}`}>
-          {libraryStatus.message || "必要なときだけ読み込んでください。"}
+          {libraryStatus.message || "接続確認が完了すると、自動でサンプルを準備します。"}
         </p>
 
       </section>
