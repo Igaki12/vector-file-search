@@ -25,6 +25,7 @@ function makeTextRecords(file, text, source = "user") {
     pageNumber: null,
     kind: "text-segment",
     source,
+    previewUrl: null,
     text: segment,
     label: `${file.name} / セグメント ${index + 1}`
   }));
@@ -47,9 +48,10 @@ async function fetchSamplePdf(fileName) {
 
 async function buildRecords(file, options = {}) {
   const source = options.source ?? "user";
+  const previewUrl = options.previewUrl ?? null;
 
   if (file.type === "application/pdf" || file.name.toLowerCase().endsWith(".pdf")) {
-    return extractPdfPages(file, { source });
+    return extractPdfPages(file, { source, previewUrl });
   }
 
   const text = await readTextFile(file);
@@ -105,6 +107,12 @@ export default function App() {
   const [extraFiles, setExtraFiles] = useState([]);
   const [textDraft, setTextDraft] = useState("");
   const [storageStatus, setStorageStatus] = useState({ state: "idle", message: "" });
+  const [previewState, setPreviewState] = useState({
+    isOpen: false,
+    fileName: "",
+    url: "",
+    pageNumber: 1
+  });
 
   useEffect(() => {
     if (apiKey) {
@@ -114,6 +122,21 @@ export default function App() {
     }
   }, [apiKey]);
 
+  useEffect(() => {
+    if (!previewState.isOpen) {
+      return undefined;
+    }
+
+    function handleKeyDown(event) {
+      if (event.key === "Escape") {
+        setPreviewState((current) => ({ ...current, isOpen: false }));
+      }
+    }
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [previewState.isOpen]);
+
   const indexedSummary = useMemo(() => {
     const pdfPages = records.filter((record) => record.kind === "pdf-page").length;
     const textSegments = records.filter((record) => record.kind === "text-segment").length;
@@ -122,6 +145,9 @@ export default function App() {
   }, [records]);
 
   const topResult = results[0]?.bestMatch ?? null;
+  const previewSrc = previewState.url
+    ? `${previewState.url}#page=${previewState.pageNumber}&view=FitH`
+    : "";
 
   function mergeRecords(current, incoming) {
     const next = new Map(current.map((record) => [record.id, record]));
@@ -177,7 +203,10 @@ export default function App() {
     const units = [];
 
     for (const file of sampleFiles) {
-      const fileUnits = await buildRecords(file, { source: "sample" });
+      const fileUnits = await buildRecords(file, {
+        source: "sample",
+        previewUrl: getSampleFileHref(file.name)
+      });
       units.push(...fileUnits);
     }
 
@@ -243,7 +272,11 @@ export default function App() {
       setStorageStatus({ state: "loading", message: "追加ファイルを解析しています..." });
 
       for (const file of extraFiles) {
-        const fileUnits = await buildRecords(file, { source: "user" });
+        const previewUrl =
+          file.type === "application/pdf" || file.name.toLowerCase().endsWith(".pdf")
+            ? URL.createObjectURL(file)
+            : null;
+        const fileUnits = await buildRecords(file, { source: "user", previewUrl });
         if (!fileUnits.length) {
           continue;
         }
@@ -325,6 +358,23 @@ export default function App() {
     } catch (error) {
       setSearchStatus({ state: "error", message: error.message });
     }
+  }
+
+  function openPdfPreview({ fileName, url, pageNumber = 1 }) {
+    if (!url) {
+      return;
+    }
+
+    setPreviewState({
+      isOpen: true,
+      fileName,
+      url,
+      pageNumber
+    });
+  }
+
+  function closePdfPreview() {
+    setPreviewState((current) => ({ ...current, isOpen: false }));
   }
 
   return (
@@ -424,7 +474,42 @@ export default function App() {
         {results.length ? (
           <div className="result-list">
             {results.map((result, index) => (
-              <article className="result-card" key={result.fileName}>
+              <article
+                className={`result-card ${result.kind === "pdf" ? "clickable" : "inactive"}`}
+                key={result.fileName}
+                onClick={() => {
+                  if (result.kind !== "pdf") {
+                    return;
+                  }
+
+                  openPdfPreview({
+                    fileName: result.fileName,
+                    url: result.bestMatch.previewUrl,
+                    pageNumber: result.bestMatch.pageNumber ?? 1
+                  });
+                }}
+                onKeyDown={(event) => {
+                  if (result.kind !== "pdf") {
+                    return;
+                  }
+
+                  if (event.key === "Enter" || event.key === " ") {
+                    event.preventDefault();
+                    openPdfPreview({
+                      fileName: result.fileName,
+                      url: result.bestMatch.previewUrl,
+                      pageNumber: result.bestMatch.pageNumber ?? 1
+                    });
+                  }
+                }}
+                role={result.kind === "pdf" ? "button" : undefined}
+                tabIndex={result.kind === "pdf" ? 0 : -1}
+                aria-label={
+                  result.kind === "pdf"
+                    ? `${result.fileName} の ${result.bestMatch.pageNumber} ページをプレビュー`
+                    : undefined
+                }
+              >
                 <div className="result-rank">{String(index + 1).padStart(2, "0")}</div>
                 <div className="result-body">
                   <div className="result-head">
@@ -527,9 +612,20 @@ export default function App() {
 
         <div className="sample-list">
           {SAMPLE_FILES.map((fileName) => (
-            <a className="sample-link" href={getSampleFileHref(fileName)} key={fileName} target="_blank" rel="noreferrer">
+            <button
+              className="sample-link"
+              type="button"
+              key={fileName}
+              onClick={() =>
+                openPdfPreview({
+                  fileName,
+                  url: getSampleFileHref(fileName),
+                  pageNumber: 1
+                })
+              }
+            >
               {fileName}
-            </a>
+            </button>
           ))}
         </div>
         <p className={`status ${libraryStatus.state}`}>
@@ -537,6 +633,32 @@ export default function App() {
         </p>
 
       </section>
+
+      {previewState.isOpen ? (
+        <div className="preview-overlay" onClick={closePdfPreview} role="presentation">
+          <section
+            className="preview-panel"
+            onClick={(event) => event.stopPropagation()}
+            aria-label="PDF プレビュー"
+          >
+            <div className="preview-header">
+              <div className="preview-header-main">
+                <span className="step">PDF Preview</span>
+                <h4>{previewState.fileName}</h4>
+              </div>
+              <button className="preview-close" type="button" onClick={closePdfPreview} aria-label="PDF プレビューを閉じる">
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                  <path d="M6 6L18 18" />
+                  <path d="M18 6L6 18" />
+                </svg>
+              </button>
+            </div>
+            <div className="preview-frame-wrap">
+              <iframe className="preview-frame" src={previewSrc} title={previewState.fileName} />
+            </div>
+          </section>
+        </div>
+      ) : null}
     </div>
   );
 }
