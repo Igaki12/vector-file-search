@@ -28,6 +28,7 @@ export async function extractPdfPages(file, options = {}) {
   const pdf = await pdfjs.getDocument({ data: buffer }).promise;
   const pages = [];
   const source = options.source ?? "user";
+  const previewUrl = options.previewUrl ?? null;
 
   for (let pageNumber = 1; pageNumber <= pdf.numPages; pageNumber += 1) {
     const page = await pdf.getPage(pageNumber);
@@ -40,6 +41,7 @@ export async function extractPdfPages(file, options = {}) {
       pageNumber,
       kind: "pdf-page",
       source,
+      previewUrl,
       text,
       label: `${file.name} / ${pageNumber}ページ`
     });
