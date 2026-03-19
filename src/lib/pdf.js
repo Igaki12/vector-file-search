@@ -14,11 +14,6 @@ async function loadPdfRuntime() {
   return pdfRuntimePromise;
 }
 
-export async function getPdfDocument(source) {
-  const pdfjs = await loadPdfRuntime();
-  return pdfjs.getDocument(source).promise;
-}
-
 function joinTextItems(items) {
   return items
     .map((item) => ("str" in item ? item.str : ""))
@@ -28,8 +23,9 @@ function joinTextItems(items) {
 }
 
 export async function extractPdfPages(file, options = {}) {
+  const pdfjs = await loadPdfRuntime();
   const buffer = await file.arrayBuffer();
-  const pdf = await getPdfDocument({ data: buffer });
+  const pdf = await pdfjs.getDocument({ data: buffer }).promise;
   const pages = [];
   const source = options.source ?? "user";
   const previewUrl = options.previewUrl ?? null;

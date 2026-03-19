@@ -1,6 +1,6 @@
-import React, { useEffect, useMemo, useRef, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { verifyApiKey, embedText } from "./lib/googleEmbeddings.js";
-import { extractPdfPages, getPdfDocument } from "./lib/pdf.js";
+import { extractPdfPages } from "./lib/pdf.js";
 import { splitTextIntoSegments, combinedScore, summarizeText } from "./lib/search.js";
 
 const API_KEY_STORAGE = "vector-file-search-api-key";
@@ -96,157 +96,6 @@ function rankRecords(records, query, queryVector) {
   );
 }
 
-function isAndroidChromeBrowser() {
-  if (typeof navigator === "undefined") {
-    return false;
-  }
-
-  const userAgent = navigator.userAgent;
-  return /Android/i.test(userAgent) && /Chrome/i.test(userAgent) && !/EdgA|SamsungBrowser|OPR|Opera/i.test(userAgent);
-}
-
-function AndroidPdfViewer({ url, initialPage, fileName }) {
-  const canvasRef = useRef(null);
-  const [pdfDocument, setPdfDocument] = useState(null);
-  const [currentPage, setCurrentPage] = useState(initialPage);
-  const [pageCount, setPageCount] = useState(0);
-  const [viewerStatus, setViewerStatus] = useState({ state: "loading", message: "PDF を読み込んでいます..." });
-
-  useEffect(() => {
-    let active = true;
-    let loadedDocument = null;
-
-    setCurrentPage(initialPage);
-    setPdfDocument(null);
-    setPageCount(0);
-    setViewerStatus({ state: "loading", message: "PDF を読み込んでいます..." });
-
-    getPdfDocument(url)
-      .then((document) => {
-        loadedDocument = document;
-
-        if (!active) {
-          document.destroy();
-          return;
-        }
-
-        setPdfDocument(document);
-        setPageCount(document.numPages);
-        setViewerStatus({ state: "idle", message: "" });
-      })
-      .catch((error) => {
-        if (!active) {
-          return;
-        }
-
-        setViewerStatus({ state: "error", message: error.message || "PDF の表示に失敗しました。" });
-      });
-
-    return () => {
-      active = false;
-      if (loadedDocument) {
-        loadedDocument.destroy();
-      }
-    };
-  }, [url, initialPage]);
-
-  useEffect(() => {
-    if (!pdfDocument || !canvasRef.current) {
-      return undefined;
-    }
-
-    let cancelled = false;
-    let renderTask = null;
-
-    async function renderPage() {
-      try {
-        setViewerStatus({ state: "loading", message: `${currentPage}ページを描画しています...` });
-
-        const page = await pdfDocument.getPage(currentPage);
-        if (cancelled || !canvasRef.current) {
-          return;
-        }
-
-        const canvas = canvasRef.current;
-        const parentWidth = canvas.parentElement?.clientWidth ?? 320;
-        const baseViewport = page.getViewport({ scale: 1 });
-        const scale = Math.max(0.6, Math.min(2, (parentWidth - 8) / baseViewport.width));
-        const viewport = page.getViewport({ scale });
-        const devicePixelRatio = window.devicePixelRatio || 1;
-        const context = canvas.getContext("2d");
-
-        canvas.width = Math.floor(viewport.width * devicePixelRatio);
-        canvas.height = Math.floor(viewport.height * devicePixelRatio);
-        canvas.style.width = `${viewport.width}px`;
-        canvas.style.height = `${viewport.height}px`;
-
-        if (!context) {
-          throw new Error("Canvas の初期化に失敗しました。");
-        }
-
-        renderTask = page.render({
-          canvasContext: context,
-          viewport,
-          transform: devicePixelRatio === 1 ? null : [devicePixelRatio, 0, 0, devicePixelRatio, 0, 0]
-        });
-
-        await renderTask.promise;
-
-        if (!cancelled) {
-          setViewerStatus({ state: "idle", message: "" });
-        }
-      } catch (error) {
-        if (!cancelled && error?.name !== "RenderingCancelledException") {
-          setViewerStatus({ state: "error", message: error.message || "PDF の描画に失敗しました。" });
-        }
-      }
-    }
-
-    renderPage();
-
-    return () => {
-      cancelled = true;
-      if (renderTask) {
-        renderTask.cancel();
-      }
-    };
-  }, [currentPage, pdfDocument]);
-
-  return (
-    <div className="android-pdf-viewer">
-      <div className="android-pdf-toolbar">
-        <button
-          className="preview-nav-button"
-          type="button"
-          onClick={() => setCurrentPage((page) => Math.max(1, page - 1))}
-          disabled={!pdfDocument || currentPage <= 1}
-        >
-          前へ
-        </button>
-        <p className="android-pdf-page">
-          {pageCount ? `${currentPage} / ${pageCount} ページ` : "ページ情報を取得中"}
-        </p>
-        <button
-          className="preview-nav-button"
-          type="button"
-          onClick={() => setCurrentPage((page) => Math.min(pageCount, page + 1))}
-          disabled={!pdfDocument || currentPage >= pageCount}
-        >
-          次へ
-        </button>
-      </div>
-      <div className="android-pdf-stage">
-        <canvas ref={canvasRef} className="android-pdf-canvas" />
-      </div>
-      <p className={`status ${viewerStatus.state}`}>{viewerStatus.message || "Android Chrome 用の簡易ビューアで表示しています。"}</p>
-      <a className="preview-open-link" href={url} target="_blank" rel="noreferrer">
-        別タブで PDF を開く
-      </a>
-      <p className="muted android-pdf-note">{fileName}</p>
-    </div>
-  );
-}
-
 export default function App() {
   const [apiKey, setApiKey] = useState(() => localStorage.getItem(API_KEY_STORAGE) ?? "");
   const [apiStatus, setApiStatus] = useState({ state: "idle", message: "" });
@@ -311,7 +160,6 @@ export default function App() {
   }, [records]);
 
   const topResult = results[0]?.bestMatch ?? null;
-  const isAndroidChrome = useMemo(() => isAndroidChromeBrowser(), []);
   const previewSrc = previewState.url
     ? `${previewState.url}#page=${previewState.pageNumber}&view=FitH`
     : "";
@@ -818,15 +666,7 @@ export default function App() {
               </button>
             </div>
             <div className="preview-frame-wrap">
-              {isAndroidChrome ? (
-                <AndroidPdfViewer
-                  url={previewState.url}
-                  initialPage={previewState.pageNumber}
-                  fileName={previewState.fileName}
-                />
-              ) : (
-                <iframe className="preview-frame" src={previewSrc} title={previewState.fileName} />
-              )}
+              <iframe className="preview-frame" src={previewSrc} title={previewState.fileName} />
             </div>
           </section>
         </div>
