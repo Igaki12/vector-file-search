@@ -605,7 +605,7 @@ export default function App() {
         <section className="card side-card">
         <div className="section-head">
           <span className="step">OPTIONAL</span>
-          <h2>サンプルを読み込む</h2>
+          <h2>サンプルを確認する</h2>
         </div>
         <p className="section-copy">
           既定のサンプル PDF は API 接続確認時に自動でベクトル化されます。
