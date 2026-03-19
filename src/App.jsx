@@ -642,7 +642,6 @@ export default function App() {
               <div className="preview-header-main">
                 <span className="step">PDF Preview</span>
                 <h4>{previewState.fileName}</h4>
-                <p>（{previewState.pageNumber}ページ目）</p>
               </div>
               <button className="preview-close" type="button" onClick={closePdfPreview} aria-label="PDF プレビューを閉じる">
                 <svg viewBox="0 0 24 24" aria-hidden="true">
