@@ -107,6 +107,7 @@ export default function App() {
   const [extraFiles, setExtraFiles] = useState([]);
   const [textDraft, setTextDraft] = useState("");
   const [storageStatus, setStorageStatus] = useState({ state: "idle", message: "" });
+  const [isResultsAnimating, setIsResultsAnimating] = useState(false);
   const [previewState, setPreviewState] = useState({
     isOpen: false,
     fileName: "",
@@ -136,6 +137,20 @@ export default function App() {
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [previewState.isOpen]);
+
+  useEffect(() => {
+    if (!results.length) {
+      setIsResultsAnimating(false);
+      return undefined;
+    }
+
+    setIsResultsAnimating(true);
+    const timeoutId = window.setTimeout(() => {
+      setIsResultsAnimating(false);
+    }, 3000);
+
+    return () => window.clearTimeout(timeoutId);
+  }, [results]);
 
   const indexedSummary = useMemo(() => {
     const pdfPages = records.filter((record) => record.kind === "pdf-page").length;
@@ -457,7 +472,7 @@ export default function App() {
         </section>
         </main>
 
-        <section className="results card">
+        <section className={`results card ${isResultsAnimating ? "is-animating" : ""}`}>
         <div className="section-head">
           <span className="step results-step">RESULTS</span>
           <h2 className="results-title">関連度ランキング</h2>
