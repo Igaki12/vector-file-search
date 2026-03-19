@@ -378,85 +378,87 @@ export default function App() {
   }
 
   return (
-    <div className="shell">
-      <header className="hero">
-        <div className="hero-copy-block">
-          <p className="eyebrow">Vector File Search Demo</p>
-          <div className="hero-title-row">
-            <img className="hero-icon" src={APP_ICON_PATH} alt="Vector File Search アイコン" />
-            <div className="hero-title-copy">
-              <h1>保存済みの資料から、近いページをすぐ見つける。</h1>
-              <p className="hero-copy">
-                PDF とテキストを対象に、ベクトル検索と語句一致を組み合わせて関連度順に表示します。
-              </p>
+    <div className={`shell ${previewState.isOpen ? "shell-with-preview" : ""}`}>
+      <div className={`split-shell ${previewState.isOpen ? "is-open" : ""}`}>
+        <div className="content-pane">
+          <header className="hero">
+            <div className="hero-copy-block">
+              <p className="eyebrow">Vector File Search Demo</p>
+              <div className="hero-title-row">
+                <img className="hero-icon" src={APP_ICON_PATH} alt="Vector File Search アイコン" />
+                <div className="hero-title-copy">
+                  <h1>保存済みの資料から、近いページをすぐ見つける。</h1>
+                  <p className="hero-copy">
+                    PDF とテキストを対象に、ベクトル検索と語句一致を組み合わせて関連度順に表示します。
+                  </p>
+                </div>
+              </div>
             </div>
-          </div>
-        </div>
-        <div className="summary-row">
-          <div className="summary-chip">
-            <span>ファイル</span>
-            <strong>{indexedSummary.files}</strong>
-          </div>
-          <div className="summary-chip">
-            <span>PDFページ</span>
-            <strong>{indexedSummary.pdfPages}</strong>
-          </div>
-          <div className="summary-chip">
-            <span>テキスト</span>
-            <strong>{indexedSummary.textSegments}</strong>
-          </div>
-        </div>
-      </header>
+            <div className="summary-row">
+              <div className="summary-chip">
+                <span>ファイル</span>
+                <strong>{indexedSummary.files}</strong>
+              </div>
+              <div className="summary-chip">
+                <span>PDFページ</span>
+                <strong>{indexedSummary.pdfPages}</strong>
+              </div>
+              <div className="summary-chip">
+                <span>テキスト</span>
+                <strong>{indexedSummary.textSegments}</strong>
+              </div>
+            </div>
+          </header>
 
-      <main className="page-stack">
-        <section className="card section-card">
-          <div className="section-head">
-            <span className="step">STEP 1</span>
-            <h2>API キー</h2>
-          </div>
-          <p className="section-copy">ブラウザ内だけで保持します。</p>
-          <label className="field">
-            <span>API Key</span>
-            <input
-              type="password"
-              placeholder="AIza..."
-              value={apiKey}
-              onChange={(event) => setApiKey(event.target.value)}
-            />
-          </label>
-          <div className="button-row">
-            <button className="primary-button" type="button" onClick={handleApiVerify}>
-              接続確認
-            </button>
-          </div>
-          <p className={`status ${apiStatus.state}`}>{apiStatus.message || "キーはブラウザの localStorage にだけ保持します。"}</p>
-        </section>
+          <main className="page-stack">
+            <section className="card section-card">
+              <div className="section-head">
+                <span className="step">STEP 1</span>
+                <h2>API キー</h2>
+              </div>
+              <p className="section-copy">ブラウザ内だけで保持します。</p>
+              <label className="field">
+                <span>API Key</span>
+                <input
+                  type="password"
+                  placeholder="AIza..."
+                  value={apiKey}
+                  onChange={(event) => setApiKey(event.target.value)}
+                />
+              </label>
+              <div className="button-row">
+                <button className="primary-button" type="button" onClick={handleApiVerify}>
+                  接続確認
+                </button>
+              </div>
+              <p className={`status ${apiStatus.state}`}>{apiStatus.message || "キーはブラウザの localStorage にだけ保持します。"}</p>
+            </section>
 
-        <section className="card section-card search-card">
-          <div className="section-head">
-            <span className="step">STEP 2</span>
-            <h2>検索</h2>
-          </div>
-          <p className="section-copy">検索対象が入っていれば、そのまま関連度順に並べ替えます。</p>
-          <label className="field">
-            <span>検索フレーズ</span>
-            <textarea
-              rows="4"
-              placeholder="例: 皮弁形成の基本手技について説明しているページ"
-              value={query}
-              onChange={(event) => setQuery(event.target.value)}
-            />
-          </label>
-          <div className="button-row">
-            <button className="primary-button" type="button" onClick={handleSearch}>
-              関連度順に並べる
-            </button>
-          </div>
-          <p className={`status ${searchStatus.state}`}>{searchStatus.message || "検索フレーズを入力すると、最も近いファイルと PDF ページを表示します。"}</p>
-        </section>
-      </main>
+            <section className="card section-card search-card">
+              <div className="section-head">
+                <span className="step">STEP 2</span>
+                <h2>検索</h2>
+              </div>
+              <p className="section-copy">検索対象が入っていれば、そのまま関連度順に並べ替えます。</p>
+              <label className="field">
+                <span>検索フレーズ</span>
+                <textarea
+                  rows="4"
+                  placeholder="例: 皮弁形成の基本手技について説明しているページ"
+                  value={query}
+                  onChange={(event) => setQuery(event.target.value)}
+                />
+              </label>
+              <div className="button-row">
+                <button className="primary-button" type="button" onClick={handleSearch}>
+                  関連度順に並べる
+                </button>
+              </div>
+              <p className={`status ${searchStatus.state}`}>{searchStatus.message || "検索フレーズを入力すると、最も近いファイルと PDF ページを表示します。"}</p>
+            </section>
+          </main>
 
-      <section className="results card">
+          <section className="results card">
         <div className="section-head">
           <span className="step results-step">RESULTS</span>
           <h2 className="results-title">関連度ランキング</h2>
@@ -544,9 +546,9 @@ export default function App() {
             <p>API キー確認後にサンプル PDF を自動準備します。検索フレーズを入力すると結果が表示されます。</p>
           </div>
         )}
-      </section>
+          </section>
 
-      <section className="card storage-card">
+          <section className="card storage-card">
         <div className="section-head">
           <span className="step">OPTIONAL</span>
           <h2>ストレージに資料を追加</h2>
@@ -599,9 +601,9 @@ export default function App() {
         <p className={`status ${storageStatus.state}`}>
           {storageStatus.message || "必要な場合のみ、ここから検索対象を追加してください。"}
         </p>
-      </section>
+          </section>
 
-      <section className="card side-card">
+          <section className="card side-card">
         <div className="section-head">
           <span className="step">OPTIONAL</span>
           <h2>サンプルを読み込む</h2>
@@ -632,19 +634,16 @@ export default function App() {
           {libraryStatus.message || "接続確認が完了すると、自動でサンプルを準備します。"}
         </p>
 
-      </section>
+          </section>
+        </div>
 
-      {previewState.isOpen ? (
-        <div className="preview-overlay" onClick={closePdfPreview} role="presentation">
-          <section
-            className="preview-panel"
-            onClick={(event) => event.stopPropagation()}
-            aria-label="PDF プレビュー"
-          >
+        {previewState.isOpen ? (
+          <section className="preview-panel preview-pane" aria-label="PDF プレビュー">
             <div className="preview-header">
               <div className="preview-header-main">
                 <span className="step">PDF Preview</span>
                 <h4>{previewState.fileName}</h4>
+                <p>（{previewState.pageNumber}ページ目）</p>
               </div>
               <button className="preview-close" type="button" onClick={closePdfPreview} aria-label="PDF プレビューを閉じる">
                 <svg viewBox="0 0 24 24" aria-hidden="true">
@@ -657,8 +656,8 @@ export default function App() {
               <iframe className="preview-frame" src={previewSrc} title={previewState.fileName} />
             </div>
           </section>
-        </div>
-      ) : null}
+        ) : null}
+      </div>
     </div>
   );
 }
