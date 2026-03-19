@@ -673,6 +673,67 @@ a {
   background: #eef3f8;
 }
 
+.android-pdf-viewer {
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr) auto auto auto;
+  height: 100%;
+  gap: 10px;
+  padding: 14px;
+}
+
+.android-pdf-toolbar {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 10px;
+}
+
+.preview-nav-button,
+.preview-open-link {
+  border: 1px solid #d4dee8;
+  border-radius: 999px;
+  background: #fff;
+  color: #173b61;
+  padding: 10px 14px;
+  text-decoration: none;
+  text-align: center;
+}
+
+.preview-nav-button:disabled {
+  opacity: 0.45;
+}
+
+.android-pdf-page {
+  margin: 0;
+  text-align: center;
+  color: #4e6072;
+  font-weight: 700;
+}
+
+.android-pdf-stage {
+  min-height: 0;
+  overflow: auto;
+  display: grid;
+  place-items: start center;
+  border-radius: 18px;
+  background: #eef3f8;
+  padding: 8px;
+}
+
+.android-pdf-canvas {
+  display: block;
+  max-width: 100%;
+  height: auto;
+  border-radius: 12px;
+  box-shadow: 0 10px 24px rgba(74, 95, 117, 0.14);
+  background: #fff;
+}
+
+.android-pdf-note {
+  margin: 0;
+  text-align: center;
+}
+
 @keyframes preview-panel-enter {
   from {
     opacity: 0;
