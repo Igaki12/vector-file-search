@@ -556,17 +556,17 @@ a {
 
   14% {
     opacity: 0.28;
-    filter: blur(2px) brightness(1.05);
+    filter: blur(2px) brightness(1.14);
   }
 
   38% {
     opacity: 0.96;
-    filter: blur(2px) brightness(1.72);
+    filter: blur(2px) brightness(1.96);
   }
 
   72% {
     opacity: 0.62;
-    filter: blur(2px) brightness(1.28);
+    filter: blur(2px) brightness(1.42);
   }
 
   100% {
@@ -585,17 +585,17 @@ a {
 
   18% {
     opacity: 0.24;
-    filter: blur(3px) brightness(1.04);
+    filter: blur(3px) brightness(1.12);
   }
 
   42% {
     opacity: 0.84;
-    filter: blur(3px) brightness(1.64);
+    filter: blur(3px) brightness(1.88);
   }
 
   74% {
     opacity: 0.54;
-    filter: blur(3px) brightness(1.22);
+    filter: blur(3px) brightness(1.36);
   }
 
   100% {
@@ -616,12 +616,12 @@ a {
 
   74% {
     opacity: 0.32;
-    filter: blur(2px) brightness(1.04);
+    filter: blur(2px) brightness(1.12);
   }
 
   86% {
     opacity: 0.88;
-    filter: blur(2px) brightness(1.62);
+    filter: blur(2px) brightness(1.82);
     transform: translateX(-4%) translateY(1%) scale(1.06);
   }
 
@@ -643,12 +643,12 @@ a {
 
   76% {
     opacity: 0.22;
-    filter: blur(3px) brightness(1.02);
+    filter: blur(3px) brightness(1.1);
   }
 
   88% {
     opacity: 0.78;
-    filter: blur(3px) brightness(1.56);
+    filter: blur(3px) brightness(1.76);
     transform: translateX(4%) translateY(-2%) scale(1.08);
   }
 
