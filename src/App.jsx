@@ -396,257 +396,257 @@ export default function App() {
     <div className={`shell ${previewState.isOpen ? "preview-open" : ""}`}>
       <div className="app-content">
         <header className="hero">
-        <div className="hero-copy-block">
-          <p className="eyebrow">Vector File Search Demo</p>
-          <div className="hero-title-row">
-            <img className="hero-icon" src={APP_ICON_PATH} alt="Vector File Search アイコン" />
-            <div className="hero-title-copy">
-              <h1>保存済みの資料から、近いページをすぐ見つける。</h1>
-              <p className="hero-copy">
-                PDF とテキストを対象に、ベクトル検索と語句一致を組み合わせて関連度順に表示します。
-              </p>
+          <div className="hero-copy-block">
+            <p className="eyebrow">Vector File Search Demo</p>
+            <div className="hero-title-row">
+              <img className="hero-icon" src={APP_ICON_PATH} alt="Vector File Search アイコン" />
+              <div className="hero-title-copy">
+                <h1>保存済みの資料から、近いページをすぐ見つける。</h1>
+                <p className="hero-copy">
+                  PDF とテキストを対象に、ベクトル検索と語句一致を組み合わせて関連度順に表示します。
+                </p>
+              </div>
             </div>
           </div>
-        </div>
-        <div className="summary-row">
-          <div className="summary-chip">
-            <span>ファイル</span>
-            <strong>{indexedSummary.files}</strong>
+          <div className="summary-row">
+            <div className="summary-chip">
+              <span>ファイル</span>
+              <strong>{indexedSummary.files}</strong>
+            </div>
+            <div className="summary-chip">
+              <span>PDFページ</span>
+              <strong>{indexedSummary.pdfPages}</strong>
+            </div>
+            <div className="summary-chip">
+              <span>テキスト</span>
+              <strong>{indexedSummary.textSegments}</strong>
+            </div>
           </div>
-          <div className="summary-chip">
-            <span>PDFページ</span>
-            <strong>{indexedSummary.pdfPages}</strong>
-          </div>
-          <div className="summary-chip">
-            <span>テキスト</span>
-            <strong>{indexedSummary.textSegments}</strong>
-          </div>
-        </div>
         </header>
 
         <main className="page-stack">
-        <section className="card section-card">
-          <div className="section-head">
-            <span className="step">STEP 1</span>
-            <h2>API キー</h2>
-          </div>
-          <p className="section-copy">ブラウザ内だけで保持します。</p>
-          <label className="field">
-            <span>API Key</span>
-            <input
-              type="password"
-              placeholder="AIza..."
-              value={apiKey}
-              onChange={(event) => setApiKey(event.target.value)}
-            />
-          </label>
-          <div className="button-row">
-            <button className="primary-button" type="button" onClick={handleApiVerify}>
-              接続確認
-            </button>
-          </div>
-          <p className={`status ${apiStatus.state}`}>{apiStatus.message || "キーはブラウザの localStorage にだけ保持します。"}</p>
-        </section>
+          <section className="card section-card">
+            <div className="section-head">
+              <span className="step">STEP 1</span>
+              <h2>API キー</h2>
+            </div>
+            <p className="section-copy">ブラウザ内だけで保持します。</p>
+            <label className="field">
+              <span>API Key</span>
+              <input
+                type="password"
+                placeholder="AIza..."
+                value={apiKey}
+                onChange={(event) => setApiKey(event.target.value)}
+              />
+            </label>
+            <div className="button-row">
+              <button className="primary-button" type="button" onClick={handleApiVerify}>
+                接続確認
+              </button>
+            </div>
+            <p className={`status ${apiStatus.state}`}>{apiStatus.message || "キーはブラウザの localStorage にだけ保持します。"}</p>
+          </section>
 
-        <section className="card section-card search-card">
-          <div className="section-head">
-            <span className="step">STEP 2</span>
-            <h2>検索</h2>
-          </div>
-          <p className="section-copy">検索対象が入っていれば、そのまま関連度順に並べ替えます。</p>
-          <label className="field">
-            <span>検索フレーズ</span>
-            <textarea
-              rows="4"
-              placeholder="例: 皮弁形成の基本手技について説明しているページ"
-              value={query}
-              onChange={(event) => setQuery(event.target.value)}
-            />
-          </label>
-          <div className="button-row">
-            <button className="primary-button" type="button" onClick={handleSearch}>
-              関連度順に並べる
-            </button>
-          </div>
-          <p className={`status ${searchStatus.state}`}>{searchStatus.message || "検索フレーズを入力すると、最も近いファイルと PDF ページを表示します。"}</p>
-        </section>
+          <section className="card section-card search-card">
+            <div className="section-head">
+              <span className="step">STEP 2</span>
+              <h2>検索</h2>
+            </div>
+            <p className="section-copy">検索対象が入っていれば、そのまま関連度順に並べ替えます。</p>
+            <label className="field">
+              <span>検索フレーズ</span>
+              <textarea
+                rows="4"
+                placeholder="例: 皮弁形成の基本手技について説明しているページ"
+                value={query}
+                onChange={(event) => setQuery(event.target.value)}
+              />
+            </label>
+            <div className="button-row">
+              <button className="primary-button" type="button" onClick={handleSearch}>
+                関連度順に並べる
+              </button>
+            </div>
+            <p className={`status ${searchStatus.state}`}>{searchStatus.message || "検索フレーズを入力すると、最も近いファイルと PDF ページを表示します。"}</p>
+          </section>
         </main>
 
         <section className={`results card ${isResultsAnimating ? "is-animating" : ""}`}>
-        <div className="section-head">
-          <span className="step results-step">RESULTS</span>
-          <h2 className="results-title">関連度ランキング</h2>
-        </div>
-        {topResult ? (
-          <div className="spotlight">
-            <div>
-              <span className="spotlight-label">Top Match</span>
-              <h3>{topResult.fileName}</h3>
-              <p>{topResult.pageNumber ? `${topResult.pageNumber}ページが最も近い候補です。` : "最も近いテキストセグメントです。"}</p>
-            </div>
-            <div className="spotlight-score">{formatScore(topResult.scores.finalScore)}</div>
+          <div className="section-head">
+            <span className="step results-step">RESULTS</span>
+            <h2 className="results-title">関連度ランキング</h2>
           </div>
-        ) : null}
-        {results.length ? (
-          <div className="result-list">
-            {results.map((result, index) => (
-              <article
-                className={`result-card ${result.kind === "pdf" ? "clickable" : "inactive"}`}
-                key={result.fileName}
-                onClick={() => {
-                  if (result.kind !== "pdf") {
-                    return;
-                  }
+          {topResult ? (
+            <div className="spotlight">
+              <div>
+                <span className="spotlight-label">Top Match</span>
+                <h3>{topResult.fileName}</h3>
+                <p>{topResult.pageNumber ? `${topResult.pageNumber}ページが最も近い候補です。` : "最も近いテキストセグメントです。"}</p>
+              </div>
+              <div className="spotlight-score">{formatScore(topResult.scores.finalScore)}</div>
+            </div>
+          ) : null}
+          {results.length ? (
+            <div className="result-list">
+              {results.map((result, index) => (
+                <article
+                  className={`result-card ${result.kind === "pdf" ? "clickable" : "inactive"}`}
+                  key={result.fileName}
+                  onClick={() => {
+                    if (result.kind !== "pdf") {
+                      return;
+                    }
 
-                  openPdfPreview({
-                    fileName: result.fileName,
-                    url: result.bestMatch.previewUrl,
-                    pageNumber: result.bestMatch.pageNumber ?? 1
-                  });
-                }}
-                onKeyDown={(event) => {
-                  if (result.kind !== "pdf") {
-                    return;
-                  }
-
-                  if (event.key === "Enter" || event.key === " ") {
-                    event.preventDefault();
                     openPdfPreview({
                       fileName: result.fileName,
                       url: result.bestMatch.previewUrl,
                       pageNumber: result.bestMatch.pageNumber ?? 1
                     });
+                  }}
+                  onKeyDown={(event) => {
+                    if (result.kind !== "pdf") {
+                      return;
+                    }
+
+                    if (event.key === "Enter" || event.key === " ") {
+                      event.preventDefault();
+                      openPdfPreview({
+                        fileName: result.fileName,
+                        url: result.bestMatch.previewUrl,
+                        pageNumber: result.bestMatch.pageNumber ?? 1
+                      });
+                    }
+                  }}
+                  role={result.kind === "pdf" ? "button" : undefined}
+                  tabIndex={result.kind === "pdf" ? 0 : -1}
+                  aria-label={
+                    result.kind === "pdf"
+                      ? `${result.fileName} の ${result.bestMatch.pageNumber} ページをプレビュー`
+                      : undefined
                   }
-                }}
-                role={result.kind === "pdf" ? "button" : undefined}
-                tabIndex={result.kind === "pdf" ? 0 : -1}
-                aria-label={
-                  result.kind === "pdf"
-                    ? `${result.fileName} の ${result.bestMatch.pageNumber} ページをプレビュー`
-                    : undefined
-                }
-              >
-                <div className="result-rank">{String(index + 1).padStart(2, "0")}</div>
-                <div className="result-body">
-                  <div className="result-head">
-                    <div>
-                      <h3>{result.fileName}</h3>
-                      <p>
-                        {result.kind === "pdf"
-                          ? `最も関連したページ: ${result.bestMatch.pageNumber}ページ`
-                          : "最も関連したセグメントを表示中"}
-                      </p>
+                >
+                  <div className="result-rank">{String(index + 1).padStart(2, "0")}</div>
+                  <div className="result-body">
+                    <div className="result-head">
+                      <div>
+                        <h3>{result.fileName}</h3>
+                        <p>
+                          {result.kind === "pdf"
+                            ? `最も関連したページ: ${result.bestMatch.pageNumber}ページ`
+                            : "最も関連したセグメントを表示中"}
+                        </p>
+                      </div>
+                      <div className="score-stack">
+                        <span className="score-label">Final {formatScore(result.bestMatch.scores.finalScore)}</span>
+                        <span className="score-sub">Semantic {formatScore(result.bestMatch.scores.semantic)}</span>
+                        <span className="score-sub">Lexical {formatScore(result.bestMatch.scores.lexical)}</span>
+                      </div>
                     </div>
-                    <div className="score-stack">
-                      <span className="score-label">Final {formatScore(result.bestMatch.scores.finalScore)}</span>
-                      <span className="score-sub">Semantic {formatScore(result.bestMatch.scores.semantic)}</span>
-                      <span className="score-sub">Lexical {formatScore(result.bestMatch.scores.lexical)}</span>
+                    <div className="score-bar">
+                      <div
+                        className="score-bar-fill"
+                        style={{ width: `${Math.max(result.bestMatch.scores.finalScore * 100, 4)}%` }}
+                      />
                     </div>
+                    <p className="snippet">{result.bestMatch.snippet || "このページから取得できるテキストが見つかりませんでした。"}</p>
                   </div>
-                  <div className="score-bar">
-                    <div
-                      className="score-bar-fill"
-                      style={{ width: `${Math.max(result.bestMatch.scores.finalScore * 100, 4)}%` }}
-                    />
-                  </div>
-                  <p className="snippet">{result.bestMatch.snippet || "このページから取得できるテキストが見つかりませんでした。"}</p>
-                </div>
-              </article>
-            ))}
-          </div>
-        ) : (
-          <div className="empty-state">
-            <h3>まだ検索結果はありません。</h3>
-            <p>API キー確認後にサンプル PDF を自動準備します。検索フレーズを入力すると結果が表示されます。</p>
-          </div>
-        )}
+                </article>
+              ))}
+            </div>
+          ) : (
+            <div className="empty-state">
+              <h3>まだ検索結果はありません。</h3>
+              <p>API キー確認後にサンプル PDF を自動準備します。検索フレーズを入力すると結果が表示されます。</p>
+            </div>
+          )}
         </section>
 
         <section className="card storage-card">
-        <div className="section-head">
-          <span className="step">OPTIONAL</span>
-          <h2>ストレージに資料を追加</h2>
-        </div>
-        <p className="section-copy">
-          必要な場合のみ、`.txt` / `.pdf` や短いメモを追加します。
-        </p>
-        <div className="storage-layout">
-          <div>
-            <label className="upload-box compact">
-              <input type="file" accept=".txt,.pdf" multiple onChange={handleExtraFileChange} />
-              <span>追加ファイルを選択</span>
-              <small>選択後にストレージへ追加します</small>
-            </label>
-            <div className="file-list">
-              {extraFiles.length ? (
-                extraFiles.map((file) => (
-                  <div className="file-chip" key={file.name}>
-                    <strong>{file.name}</strong>
-                    <span>{file.type || "text/plain"}</span>
-                  </div>
-                ))
-              ) : (
-                <p className="muted">追加ファイルは未選択です。</p>
-              )}
+          <div className="section-head">
+            <span className="step">OPTIONAL</span>
+            <h2>ストレージに資料を追加</h2>
+          </div>
+          <p className="section-copy">
+            必要な場合のみ、`.txt` / `.pdf` や短いメモを追加します。
+          </p>
+          <div className="storage-layout">
+            <div>
+              <label className="upload-box compact">
+                <input type="file" accept=".txt,.pdf" multiple onChange={handleExtraFileChange} />
+                <span>追加ファイルを選択</span>
+                <small>選択後にストレージへ追加します</small>
+              </label>
+              <div className="file-list">
+                {extraFiles.length ? (
+                  extraFiles.map((file) => (
+                    <div className="file-chip" key={file.name}>
+                      <strong>{file.name}</strong>
+                      <span>{file.type || "text/plain"}</span>
+                    </div>
+                  ))
+                ) : (
+                  <p className="muted">追加ファイルは未選択です。</p>
+                )}
+              </div>
+              <div className="button-row">
+                <button className="primary-button" type="button" onClick={handleAddFilesToStorage}>
+                  ファイルを追加
+                </button>
+              </div>
             </div>
-            <div className="button-row">
-              <button className="primary-button" type="button" onClick={handleAddFilesToStorage}>
-                ファイルを追加
-              </button>
+            <div>
+              <label className="field">
+                <span>テキストを直接追加</span>
+                <textarea
+                  rows="7"
+                  placeholder="検索対象に加えたいメモや説明文を入力"
+                  value={textDraft}
+                  onChange={(event) => setTextDraft(event.target.value)}
+                />
+              </label>
+              <div className="button-row">
+                <button className="primary-button" type="button" onClick={handleAddTextToStorage}>
+                  テキストを追加
+                </button>
+              </div>
             </div>
           </div>
-          <div>
-            <label className="field">
-              <span>テキストを直接追加</span>
-              <textarea
-                rows="7"
-                placeholder="検索対象に加えたいメモや説明文を入力"
-                value={textDraft}
-                onChange={(event) => setTextDraft(event.target.value)}
-              />
-            </label>
-            <div className="button-row">
-              <button className="primary-button" type="button" onClick={handleAddTextToStorage}>
-                テキストを追加
-              </button>
-            </div>
-          </div>
-        </div>
-        <p className={`status ${storageStatus.state}`}>
-          {storageStatus.message || "必要な場合のみ、ここから検索対象を追加してください。"}
-        </p>
+          <p className={`status ${storageStatus.state}`}>
+            {storageStatus.message || "必要な場合のみ、ここから検索対象を追加してください。"}
+          </p>
         </section>
 
         <section className="card side-card">
-        <div className="section-head">
-          <span className="step">OPTIONAL</span>
-          <h2>サンプルを確認する</h2>
-        </div>
-        <p className="section-copy">
-          既定のサンプル PDF は API 接続確認時に自動でベクトル化されます。
-        </p>
+          <div className="section-head">
+            <span className="step">OPTIONAL</span>
+            <h2>サンプルを確認する</h2>
+          </div>
+          <p className="section-copy">
+            既定のサンプル PDF は API 接続確認時に自動でベクトル化されます。
+          </p>
 
-        <div className="sample-list">
-          {SAMPLE_FILES.map((fileName) => (
-            <button
-              className="sample-link"
-              type="button"
-              key={fileName}
-              onClick={() =>
-                openPdfPreview({
-                  fileName,
-                  url: getSampleFileHref(fileName),
-                  pageNumber: 1
-                })
-              }
-            >
-              {fileName}
-            </button>
-          ))}
-        </div>
-        <p className={`status ${libraryStatus.state}`}>
-          {libraryStatus.message || "接続確認が完了すると、自動でサンプルを準備します。"}
-        </p>
+          <div className="sample-list">
+            {SAMPLE_FILES.map((fileName) => (
+              <button
+                className="sample-link"
+                type="button"
+                key={fileName}
+                onClick={() =>
+                  openPdfPreview({
+                    fileName,
+                    url: getSampleFileHref(fileName),
+                    pageNumber: 1
+                  })
+                }
+              >
+                {fileName}
+              </button>
+            ))}
+          </div>
+          <p className={`status ${libraryStatus.state}`}>
+            {libraryStatus.message || "接続確認が完了すると、自動でサンプルを準備します。"}
+          </p>
 
         </section>
       </div>

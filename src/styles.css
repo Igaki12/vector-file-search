@@ -359,16 +359,18 @@ a {
 
 .results::before {
   background:
-    radial-gradient(55% 75% at 16% 54%, rgba(126, 181, 236, 0.16) 0, rgba(126, 181, 236, 0.06) 36%, transparent 64%),
-    radial-gradient(48% 70% at 48% 44%, rgba(122, 174, 227, 0.1) 0, rgba(122, 174, 227, 0.04) 34%, transparent 62%);
-  transform: translateX(-18%) translateY(2%);
+    radial-gradient(62% 84% at 12% 54%, rgba(126, 181, 236, 0.34) 0, rgba(126, 181, 236, 0.2) 18%, rgba(126, 181, 236, 0.1) 34%, transparent 68%),
+    radial-gradient(54% 76% at 46% 44%, rgba(122, 174, 227, 0.2) 0, rgba(122, 174, 227, 0.11) 22%, transparent 58%);
+  filter: blur(2px);
+  transform: translateX(-34%) translateY(4%) scale(0.96);
 }
 
 .results::after {
   background:
-    radial-gradient(62% 88% at 82% 46%, rgba(153, 206, 255, 0.18) 0, rgba(153, 206, 255, 0.06) 32%, transparent 62%),
-    linear-gradient(108deg, transparent 30%, rgba(191, 225, 255, 0.08) 48%, transparent 68%);
-  transform: translateX(20%) translateY(-2%);
+    radial-gradient(68% 92% at 86% 46%, rgba(153, 206, 255, 0.32) 0, rgba(153, 206, 255, 0.17) 18%, rgba(153, 206, 255, 0.08) 34%, transparent 68%),
+    linear-gradient(108deg, transparent 20%, rgba(191, 225, 255, 0.18) 42%, rgba(191, 225, 255, 0.08) 52%, transparent 72%);
+  filter: blur(3px);
+  transform: translateX(34%) translateY(-4%) scale(1.02);
 }
 
 .results.is-animating::before {
@@ -540,32 +542,48 @@ a {
 @keyframes results-wave-left {
   0% {
     opacity: 0;
-    transform: translateX(-20%) translateY(4%) scale(1);
+    transform: translateX(-38%) translateY(8%) scale(0.94);
   }
 
-  20% {
-    opacity: 0.72;
+  14% {
+    opacity: 0.28;
+  }
+
+  38% {
+    opacity: 0.96;
+  }
+
+  72% {
+    opacity: 0.62;
   }
 
   100% {
     opacity: 0;
-    transform: translateX(8%) translateY(-3%) scale(1.08);
+    transform: translateX(18%) translateY(-8%) scale(1.16);
   }
 }
 
 @keyframes results-wave-right {
   0% {
     opacity: 0;
-    transform: translateX(24%) translateY(-3%) scale(1.04);
+    transform: translateX(42%) translateY(-10%) scale(1);
   }
 
-  24% {
-    opacity: 0.58;
+  18% {
+    opacity: 0.24;
+  }
+
+  42% {
+    opacity: 0.84;
+  }
+
+  74% {
+    opacity: 0.54;
   }
 
   100% {
     opacity: 0;
-    transform: translateX(-6%) translateY(3%) scale(1.1);
+    transform: translateX(-20%) translateY(8%) scale(1.18);
   }
 }
 
