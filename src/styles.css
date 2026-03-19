@@ -586,7 +586,8 @@ a {
   display: flex;
   justify-content: flex-end;
   align-items: stretch;
-  pointer-events: none;
+  pointer-events: auto;
+  overscroll-behavior: contain;
 }
 
 .preview-panel {
@@ -600,6 +601,7 @@ a {
   grid-template-rows: auto minmax(0, 1fr);
   overflow: hidden;
   pointer-events: auto;
+  overscroll-behavior: contain;
   opacity: 0;
   transform: translateX(28px) scale(0.985);
   animation: preview-panel-enter 320ms cubic-bezier(0.22, 1, 0.36, 1) forwards;
@@ -664,6 +666,7 @@ a {
 .preview-frame-wrap {
   min-height: 0;
   background: #eef3f8;
+  overscroll-behavior: contain;
 }
 
 .preview-frame {
