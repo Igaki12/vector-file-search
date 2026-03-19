@@ -152,6 +152,35 @@ export default function App() {
     return () => window.clearTimeout(timeoutId);
   }, [results]);
 
+  useEffect(() => {
+    if (!results.length) {
+      return undefined;
+    }
+
+    let restartTimeoutId = null;
+    let stopTimeoutId = null;
+    const intervalId = window.setInterval(() => {
+      setIsResultsAnimating(false);
+
+      restartTimeoutId = window.setTimeout(() => {
+        setIsResultsAnimating(true);
+        stopTimeoutId = window.setTimeout(() => {
+          setIsResultsAnimating(false);
+        }, 3000);
+      }, 80);
+    }, 10000);
+
+    return () => {
+      window.clearInterval(intervalId);
+      if (restartTimeoutId) {
+        window.clearTimeout(restartTimeoutId);
+      }
+      if (stopTimeoutId) {
+        window.clearTimeout(stopTimeoutId);
+      }
+    };
+  }, [results.length]);
+
   const indexedSummary = useMemo(() => {
     const pdfPages = records.filter((record) => record.kind === "pdf-page").length;
     const textSegments = records.filter((record) => record.kind === "text-segment").length;
