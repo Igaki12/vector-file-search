@@ -343,7 +343,6 @@ a {
   position: relative;
   overflow: hidden;
   background:
-    radial-gradient(circle at top left, rgba(84, 127, 181, 0.18), transparent 30%),
     linear-gradient(145deg, #101924 0%, #172536 56%, #1c3044 100%);
   border-color: rgba(62, 86, 112, 0.95);
   box-shadow: 0 22px 42px rgba(21, 35, 49, 0.28);
@@ -353,33 +352,31 @@ a {
 .results::after {
   content: "";
   position: absolute;
-  inset: -18% auto auto -10%;
-  width: 160%;
-  height: 90%;
+  inset: 0;
   opacity: 0;
   pointer-events: none;
 }
 
 .results::before {
   background:
-    radial-gradient(circle at 20% 50%, rgba(140, 186, 232, 0.26) 0, rgba(140, 186, 232, 0.12) 10%, transparent 22%),
-    radial-gradient(circle at 55% 48%, rgba(140, 186, 232, 0.2) 0, rgba(140, 186, 232, 0.08) 10%, transparent 20%),
-    radial-gradient(circle at 85% 44%, rgba(140, 186, 232, 0.18) 0, rgba(140, 186, 232, 0.06) 10%, transparent 20%);
+    radial-gradient(55% 75% at 16% 54%, rgba(126, 181, 236, 0.16) 0, rgba(126, 181, 236, 0.06) 36%, transparent 64%),
+    radial-gradient(48% 70% at 48% 44%, rgba(122, 174, 227, 0.1) 0, rgba(122, 174, 227, 0.04) 34%, transparent 62%);
+  transform: translateX(-18%) translateY(2%);
 }
 
 .results::after {
-  inset: auto -20% -28% auto;
-  width: 120%;
-  height: 75%;
-  background: linear-gradient(90deg, transparent, rgba(137, 191, 235, 0.16), transparent);
+  background:
+    radial-gradient(62% 88% at 82% 46%, rgba(153, 206, 255, 0.18) 0, rgba(153, 206, 255, 0.06) 32%, transparent 62%),
+    linear-gradient(108deg, transparent 30%, rgba(191, 225, 255, 0.08) 48%, transparent 68%);
+  transform: translateX(20%) translateY(-2%);
 }
 
 .results.is-animating::before {
-  animation: results-wave-rings 3000ms ease-out forwards;
+  animation: results-wave-left 3000ms cubic-bezier(0.22, 1, 0.36, 1) forwards;
 }
 
 .results.is-animating::after {
-  animation: results-wave-sweep 3000ms ease-out forwards;
+  animation: results-wave-right 3000ms cubic-bezier(0.22, 1, 0.36, 1) forwards;
 }
 
 .results .section-head {
@@ -413,15 +410,15 @@ a {
   padding: 18px 20px;
   margin: 4px 0 16px;
   border-radius: 18px;
-  border: 1px solid rgba(121, 156, 191, 0.24);
-  background: linear-gradient(180deg, rgba(29, 47, 66, 0.9) 0%, rgba(20, 33, 47, 0.9) 100%);
+  border: 1px solid #d5e2ee;
+  background: linear-gradient(180deg, #fbfdff 0%, #f1f7fc 100%);
 }
 
 .spotlight-label {
   display: inline-block;
   font-size: 0.76rem;
   font-weight: 700;
-  color: #9fc1e2;
+  color: #48647f;
   text-transform: uppercase;
   letter-spacing: 0.08em;
 }
@@ -429,18 +426,18 @@ a {
 .spotlight h3,
 .result-head h3,
 .empty-state h3 {
-  color: #f6fbff;
+  color: #18212b;
 }
 
 .spotlight p {
   margin: 6px 0 0;
-  color: #adc2d8;
+  color: #60707f;
 }
 
 .spotlight-score {
   font-size: clamp(1.7rem, 4vw, 2.4rem);
   font-weight: 700;
-  color: #f5fbff;
+  color: #17385d;
   white-space: nowrap;
 }
 
@@ -450,9 +447,9 @@ a {
   gap: 14px;
   padding: 16px;
   border-radius: 18px;
-  border: 1px solid rgba(125, 152, 179, 0.2);
-  background: rgba(25, 39, 54, 0.72);
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.03);
+  border: 1px solid #dce5ee;
+  background: #ffffff;
+  box-shadow: 0 8px 22px rgba(72, 97, 122, 0.08);
 }
 
 .result-card.clickable {
@@ -466,8 +463,8 @@ a {
 .result-card.clickable:hover,
 .result-card.clickable:focus-visible {
   transform: translateY(-1px);
-  border-color: rgba(150, 188, 223, 0.42);
-  box-shadow: 0 14px 30px rgba(8, 15, 23, 0.34);
+  border-color: #b8cbde;
+  box-shadow: 0 14px 30px rgba(73, 100, 128, 0.12);
   outline: none;
 }
 
@@ -479,8 +476,8 @@ a {
   display: grid;
   place-items: center;
   border-radius: 14px;
-  background: rgba(234, 242, 251, 0.12);
-  color: #f3f8fd;
+  background: #eef3f8;
+  color: #21384f;
   font-size: 1.05rem;
   font-weight: 700;
 }
@@ -499,12 +496,12 @@ a {
 .score-label {
   display: block;
   font-weight: 700;
-  color: #f6fbff;
+  color: #18334d;
 }
 
 .score-sub {
   display: block;
-  color: #a5bbcf;
+  color: #6a7888;
   font-size: 0.9rem;
 }
 
@@ -512,7 +509,7 @@ a {
   width: 100%;
   height: 8px;
   border-radius: 999px;
-  background: rgba(233, 240, 247, 0.12);
+  background: #e8eef5;
   overflow: hidden;
   margin: 12px 0;
 }
@@ -525,51 +522,50 @@ a {
 
 .snippet {
   margin: 0;
-  color: #d4e1ee;
 }
 
 .empty-state {
   border-radius: 18px;
-  border: 1px dashed rgba(149, 182, 214, 0.28);
+  border: 1px dashed #c7d6e5;
   padding: 28px 18px;
   text-align: center;
-  background: rgba(20, 33, 47, 0.64);
+  background: rgba(250, 253, 255, 0.92);
 }
 
 .empty-state p,
 .results .result-head p {
-  color: #adc2d8;
+  color: #60707f;
 }
 
-@keyframes results-wave-rings {
+@keyframes results-wave-left {
   0% {
     opacity: 0;
-    transform: translateX(-3%) translateY(0) scale(0.95);
+    transform: translateX(-20%) translateY(4%) scale(1);
   }
 
-  18% {
-    opacity: 0.95;
+  20% {
+    opacity: 0.72;
   }
 
   100% {
     opacity: 0;
-    transform: translateX(6%) translateY(3%) scale(1.12);
+    transform: translateX(8%) translateY(-3%) scale(1.08);
   }
 }
 
-@keyframes results-wave-sweep {
+@keyframes results-wave-right {
   0% {
     opacity: 0;
-    transform: translateX(-12%) skewX(-12deg);
+    transform: translateX(24%) translateY(-3%) scale(1.04);
   }
 
-  25% {
-    opacity: 0.6;
+  24% {
+    opacity: 0.58;
   }
 
   100% {
     opacity: 0;
-    transform: translateX(20%) skewX(-12deg);
+    transform: translateX(-6%) translateY(3%) scale(1.1);
   }
 }
 
