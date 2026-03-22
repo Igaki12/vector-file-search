@@ -747,7 +747,7 @@ a {
   }
 
   .shell.preview-open .app-content {
-    max-width: none;
+    width: 100%;
     transform: translateY(-6px);
   }
 
