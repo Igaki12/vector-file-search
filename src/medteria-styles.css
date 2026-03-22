@@ -3,7 +3,7 @@
   font-family: "Roboto", "Helvetica", "Arial", sans-serif;
   line-height: 1.43;
   font-weight: 400;
-  background: #fff;
+  background: #fdfbf7;
   color: rgba(0, 0, 0, 0.87);
   font-synthesis: none;
   text-rendering: optimizeLegibility;
@@ -42,6 +42,8 @@ a {
 .med-layout {
   min-height: 100vh;
   background: #fdfbf7;
+  max-width: 1280px;
+  margin: 0 auto;
 }
 
 .med-global-header {
@@ -52,7 +54,7 @@ a {
   align-items: center;
   padding: 0 24px;
   border-bottom: 1px solid rgba(0, 0, 0, 0.12);
-  background: #fff;
+  background: transparent;
 }
 
 .med-global-left,
@@ -198,8 +200,6 @@ a {
   display: flex;
   align-items: stretch;
   min-height: calc(100vh - 64px);
-  max-width: 1280px;
-  margin: 0 auto;
 }
 
 .med-sidebar {
@@ -221,7 +221,7 @@ a {
 .med-side-banner,
 .med-space-item,
 .med-main-panel {
-  background: #fff;
+  background: transparent;
 }
 
 .med-community-card {
@@ -349,7 +349,7 @@ a {
 }
 
 .med-layout.preview-open .med-main {
-  margin-right: min(38vw, 560px);
+  margin-right: 440px;
 }
 
 .med-main-panel {
@@ -537,7 +537,7 @@ a {
   height: 48px;
   border-top: 1px solid rgba(0, 0, 0, 0.12);
   border-bottom: 1px solid rgba(0, 0, 0, 0.12);
-  background: #fff;
+  background: transparent;
   font-size: 0.875rem;
   font-weight: 500;
   color: rgba(0, 0, 0, 0.87);
@@ -651,9 +651,9 @@ a {
 .med-preview-dock {
   position: fixed;
   top: 88px;
-  right: 24px;
+  right: calc(max(24px, 50vw - 640px + 24px));
   bottom: 24px;
-  width: min(38vw, 560px);
+  width: 420px;
   z-index: 30;
   display: flex;
   pointer-events: none;
@@ -745,7 +745,11 @@ a {
 
 @media (max-width: 1080px) {
   .med-layout.preview-open .med-main {
-    margin-right: min(44vw, 460px);
+    margin-right: 360px;
+  }
+
+  .med-preview-dock {
+    width: 340px;
   }
 
   .med-file-list-head span:nth-child(2),
