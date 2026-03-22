@@ -25,6 +25,8 @@
 - 企画書代わりに見せられる、シンプルで理解しやすい体験を優先する
 - 主導線は「検索」であり、「ファイル追加」はオプション扱いにする
 - 主導線は `API キー → 接続確認とサンプル準備 → 検索` とする
+- Medteria 外観版は既存検索アプリとは別エントリで管理する
+- Medteria 外観版では、当面は PDF プレビュー表現のみを先行実装し、ベクトル検索は持ち込まない
 
 ## 参照ドキュメント
 
@@ -39,6 +41,8 @@ Medteria 外観版の検討・比較では、以下のローカル参照物も�
 - [PLAN-introduce-to-Medteria.md](/Users/igaki/Documents/GitHub/vector-file-search/PLAN-introduce-to-Medteria.md)
 - [screenshot-medteria.html](/Users/igaki/Documents/GitHub/vector-file-search/screenshot-medteria.html)
 - [\_app-473b12f3f682a78f.js](/Users/igaki/Documents/GitHub/vector-file-search/screenshot-medteria_files/_app-473b12f3f682a78f.js)
+
+上記は Medteria の DOM 構造、余白、色調、ボタン寸法、一覧レイアウトを観察するための参照物であり、アプリ本体へそのまま移植するためのものではない。
 
 ## モデル前提
 
@@ -72,6 +76,22 @@ Medteria 外観版の検討・比較では、以下のローカル参照物も�
 - 既存ストレージの読み込み
 - オプションでの追加資料登録
 - レスポンシブなデモ UI
+
+### Medteria 外観版で当面対応するもの
+
+- `medteria.html` の別エントリ出力
+- Medteria のドライブ一覧風レイアウト再現
+- `sample-files/` ベースの静的 PDF 一覧表示
+- 右側拡張パネル / 下部シートとしての PDF プレビュー
+- 既存トップから Medteria 外観版への遷移導線
+
+### Medteria 外観版で当面対応しないもの
+
+- API キー入力
+- ベクトル検索
+- 関連度スコア表示
+- 検索結果ランキング
+- 追加ファイル登録 UI
 
 ### 対応しないもの
 
@@ -364,6 +384,12 @@ PDF の詳細表示については以下を採用する。
 - 検索の本筋と補助機能を分離できるから
 - UI の見通しが良くなるから
 
+### なぜ Medteria 外観版を別エントリにするか
+
+- 検索デモ本体の体験を壊さずに、見た目提案だけを独立して比較できるから
+- 既存 Medteria に似せる調整を、検索ロジックの変更と切り離して進められるから
+- 現時点では「見た目再現 + PDF プレビュー」を先に固める方が、提案用途として分かりやすいから
+
 ## 更新履歴
 
 ### 2026-03-11
@@ -410,5 +436,6 @@ PDF の詳細表示については以下を採用する。
 ### 2026-03-22
 
 - Medteria 外観版の実装計画書 `PLAN-introduce-to-Medteria.md` を正式な参照物として追加
-- Medteria 外観参照用のローカル資料は `screenshot-medteria.html` と `screenshot-medteria_files/_app-473b12f3f682a78f.js` を最小構成として扱う方針を追加
+- Medteria 外観参照用のローカル資料は `screenshot-medteria.html` と `screenshot-medteria_files/_app-473b12f3f682a78f.js` を主要参照物として扱う方針を追加
 - GitHub Pages では既存トップ `docs/index.html` を維持し、Medteria 外観版を `docs/medteria.html` に別エントリとして出力する方針を追加
+- Medteria 外観版では、当面はベクトル検索を載せずに PDF プレビュー表現の再現を優先する方針を追加

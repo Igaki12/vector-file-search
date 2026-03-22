@@ -159,7 +159,7 @@ export default function MedteriaApp() {
       <header className="med-global-header">
         <div className="med-global-left">
           <div className="med-logo" aria-label="Medteria">
-            <span className="med-logo-mark" />
+            <span className="med-logo-mark" style={{ display: 'grid', placeItems: 'center', color: '#fff', fontWeight: 'bold' }}>M</span>
             <span className="med-logo-text">Medteria</span>
           </div>
           <div className="med-header-links">
