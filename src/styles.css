@@ -283,11 +283,11 @@ a {
   display: inline-flex;
   align-items: center;
   justify-content: center;
+  border: 1px solid #d5dde7;
   border-radius: 999px;
-  padding: 11px 18px;
-  border: 1px solid #ced8e2;
-  background: rgba(255, 255, 255, 0.84);
+  background: rgba(255, 255, 255, 0.88);
   color: #173b61;
+  padding: 11px 18px;
   font-weight: 700;
   text-decoration: none;
 }
