@@ -34,6 +34,12 @@
 
 この資料は、2026 年 3 月 10 日公開の Google Cloud 公式ドキュメントのコピーであり、`gemini-embedding-2-preview` の仕様を含む。
 
+Medteria 外観版の検討・比較では、以下のローカル参照物も使う。
+
+- [PLAN-introduce-to-Medteria.md](/Users/igaki/Documents/GitHub/vector-file-search/PLAN-introduce-to-Medteria.md)
+- [screenshot-medteria.html](/Users/igaki/Documents/GitHub/vector-file-search/screenshot-medteria.html)
+- [\_app-473b12f3f682a78f.js](/Users/igaki/Documents/GitHub/vector-file-search/screenshot-medteria_files/_app-473b12f3f682a78f.js)
+
 ## モデル前提
 
 初期版では、埋め込みモデルとして以下を採用する。
@@ -335,6 +341,10 @@ PDF の詳細表示については以下を採用する。
 - ビルド成果物は `docs/` に出力する
 - `sample-files/` の内容はビルド後に `docs/sample-files/` にコピーする
 - GitHub Pages では `/vector-file-search/` 配下で配信される前提で `base` を設定する
+- 既存フロントエンドは `docs/index.html` を維持する
+- Medteria 外観版は `docs/medteria.html` に別エントリとして出力する
+- 既存フロントエンドから Medteria 外観版へ、画面内ボタンひとつで遷移できる構成を維持する
+- Medteria 外観版は既存トップの置き換えではなく、比較・提案用の別導線として扱う
 
 ## 実装判断メモ
 
@@ -396,3 +406,9 @@ PDF の詳細表示については以下を採用する。
 - `RESULTS` セクションのみ濃色の注目ブロックとして見せる方針を追記
 - `result-card` を暗色の半透明カードとして見せる方針を追記
 - 検索実行後または結果更新時だけ、約 3 秒の波打つ演出を表示する方針を追記
+
+### 2026-03-22
+
+- Medteria 外観版の実装計画書 `PLAN-introduce-to-Medteria.md` を正式な参照物として追加
+- Medteria 外観参照用のローカル資料は `screenshot-medteria.html` と `screenshot-medteria_files/_app-473b12f3f682a78f.js` を最小構成として扱う方針を追加
+- GitHub Pages では既存トップ `docs/index.html` を維持し、Medteria 外観版を `docs/medteria.html` に別エントリとして出力する方針を追加
