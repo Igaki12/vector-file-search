@@ -260,6 +260,11 @@ a {
   margin-top: 14px;
 }
 
+.hero-link-row {
+  display: flex;
+  justify-content: flex-start;
+}
+
 .primary-button {
   border: none;
   border-radius: 999px;
@@ -272,6 +277,23 @@ a {
 
 .primary-button:hover {
   background: #204a77;
+}
+
+.secondary-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999px;
+  padding: 11px 18px;
+  border: 1px solid #ced8e2;
+  background: rgba(255, 255, 255, 0.84);
+  color: #173b61;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.secondary-button:hover {
+  background: #f6f9fc;
 }
 
 .status {

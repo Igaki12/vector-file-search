@@ -424,6 +424,11 @@ export default function App() {
                 </p>
               </div>
             </div>
+            <div className="hero-link-row">
+              <a className="secondary-button" href={`${import.meta.env.BASE_URL}medteria.html`}>
+                Medteria外観版を開く
+              </a>
+            </div>
           </div>
           <div className="summary-row">
             <div className="summary-chip">
