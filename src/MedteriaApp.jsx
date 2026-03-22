@@ -162,13 +162,13 @@ export default function MedteriaApp() {
             <span className="med-logo-mark" style={{ display: 'grid', placeItems: 'center', color: '#fff', fontWeight: 'bold' }}>M</span>
             <span className="med-logo-text">Medteria</span>
           </div>
+        </div>
+        <div className="med-global-right">
           <div className="med-header-links">
             <HeaderLink>初期研修病院情報</HeaderLink>
             <HeaderLink>病院求人管理画面</HeaderLink>
             <HeaderLink>倍率ナビ</HeaderLink>
           </div>
-        </div>
-        <div className="med-global-right">
           <button className="med-outlined-button" type="button">
             MedteriaSNSへ切替
           </button>
@@ -245,8 +245,33 @@ export default function MedteriaApp() {
                 <a className="med-ghost-link" href={`${import.meta.env.BASE_URL}index.html`}>
                   既存検索アプリへ
                 </a>
+              </div>
+            </div>
+
+            <div className="med-tabs-row">
+              <div className="med-tabs">
+                <button className="med-tab" type="button">
+                  <Icon viewBox="0 0 24 24"><path d="M21 10.12h-6.78l2.74-2.82c-2.73-2.7-7.15-2.8-9.88-.1-2.73 2.71-2.73 7.08 0 9.79s7.15 2.71 9.88 0C18.32 15.65 19 14.08 19 12.1h2c0 1.98-.88 4.55-2.64 6.29-3.51 3.48-9.21 3.48-12.72 0-3.5-3.47-3.53-9.11-.02-12.58s9.14-3.47 12.65 0L21 3zM12.5 8v4.25l3.5 2.08-.72 1.21L11 13V8z" fill="currentColor"/></Icon>
+                  タイムライン
+                </button>
+                <button className="med-tab is-active" type="button">
+                  <Icon viewBox="0 0 24 24"><path d="M20 6h-8l-2-2H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2zm0 12H4V8h16v10z" fill="currentColor"/></Icon>
+                  ドライブ
+                </button>
+                <button className="med-tab" type="button">更新履歴</button>
+              </div>
+
+              <div className="med-toolbar-actions">
+                <div className="med-search-bar">
+                  <Icon viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z" fill="currentColor"/></Icon>
+                  <input type="text" placeholder="コミュニティ内を検索" className="med-search-input" />
+                </div>
                 <button className="med-primary-button" type="button">
-                  新規作成
+                  <Icon viewBox="0 0 22 22">
+                    <path d="M15.958,3.778H8.487l-.25-.792A2.375,2.375,0,0,0,6,1.4H2.375A2.376,2.376,0,0,0,0,3.778V14.07a2.375,2.375,0,0,0,2.375,2.375H10V14.778H2.375a.709.709,0,0,1-.708-.708V3.779a.71.71,0,0,1,.708-.709H6a.71.71,0,0,1,.661.453l.239.757.368,1.164h8.692a.71.71,0,0,1,.709.708V9.758h1.667V6.153a2.376,2.376,0,0,0-2.375-2.375M9.1,2.945h2.348L14.313,1.9l.38,1.043h1.265A3.253,3.253,0,0,1,16.487,3L15.6.548a.834.834,0,0,0-1.068-.5L9.387,1.921A.818.818,0,0,0,8.9,2.43c.042.092.089.183.123.279Zm6.737,9.313H14.167v1.667H12.5v1.667h1.667v1.667h1.667V15.592H17.5V13.925H15.833Z" transform="translate(0.833 1.667)" fill="currentColor"/>
+                  </Icon>
+                  作成・アップロード
+                  <Icon viewBox="0 0 24 24"><path d="M7 10l5 5 5-5z" fill="currentColor"/></Icon>
                 </button>
               </div>
             </div>
