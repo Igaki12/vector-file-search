@@ -139,17 +139,21 @@ export default function App() {
   }, [previewState.isOpen]);
 
   useEffect(() => {
-    if (!results.length) {
-      setIsResultsAnimating(false);
-      return undefined;
-    }
+    // アニメーションを確実に再トリガーするため一旦 false にする
+    setIsResultsAnimating(false);
 
-    setIsResultsAnimating(true);
-    const timeoutId = window.setTimeout(() => {
-      setIsResultsAnimating(false);
-    }, 3000);
+    const timer1 = window.setTimeout(() => {
+      setIsResultsAnimating(true);
+    }, 50);
 
-    return () => window.clearTimeout(timeoutId);
+    const timer2 = window.setTimeout(() => {
+      setIsResultsAnimating(false);
+    }, 3050);
+
+    return () => {
+      window.clearTimeout(timer1);
+      window.clearTimeout(timer2);
+    };
   }, [results]);
 
   const indexedSummary = useMemo(() => {
@@ -472,7 +476,7 @@ export default function App() {
           </section>
         </main>
 
-        <section className={`results card ${isResultsAnimating ? "is-animating" : results.length ? "idle-wave" : ""}`}>
+        <section className={`results card ${isResultsAnimating ? "is-animating" : ""}`}>
           <div className="section-head">
             <span className="step results-step">RESULTS</span>
             <h2 className="results-title">関連度ランキング</h2>

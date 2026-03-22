@@ -391,13 +391,7 @@ a {
   animation: results-glow 3000ms ease-out forwards;
 }
 
-.results.idle-wave::before {
-  animation: results-wave-left-loop 10000ms linear infinite;
-}
 
-.results.idle-wave::after {
-  animation: results-glow-loop 10000ms linear infinite;
-}
 
 .results .section-head {
   margin-bottom: 12px;
@@ -602,55 +596,6 @@ a {
   }
 }
 
-@keyframes results-wave-left-loop {
-  0%,
-  65%,
-  100% {
-    opacity: 0;
-    filter: blur(2px) brightness(0.96);
-    transform: translate3d(-30%, 0, 0) scale(0.96);
-  }
-
-  74% {
-    opacity: 0.3;
-    filter: blur(2px) brightness(1.14);
-  }
-
-  86% {
-    opacity: 0.84;
-    filter: blur(2px) brightness(1.64);
-    transform: translate3d(4%, 0, 0) scale(1.03);
-  }
-
-  97% {
-    opacity: 0.08;
-    filter: blur(2px) brightness(1.02);
-    transform: translate3d(30%, 0, 0) scale(1.08);
-  }
-}
-
-@keyframes results-glow-loop {
-  0%,
-  65%,
-  100% {
-    opacity: 0;
-  }
-
-  76% {
-    opacity: 0.22;
-    filter: brightness(1.08);
-  }
-
-  88% {
-    opacity: 0.44;
-    filter: brightness(1.14);
-  }
-
-  97% {
-    opacity: 0.08;
-    filter: brightness(1.02);
-  }
-}
 
 .storage-layout {
   display: grid;
@@ -876,8 +821,6 @@ a {
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .results.idle-wave::before,
-  .results.idle-wave::after,
   .results.is-animating::before,
   .results.is-animating::after {
     animation: none;
