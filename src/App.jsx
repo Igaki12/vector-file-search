@@ -114,6 +114,7 @@ export default function App() {
     url: "",
     pageNumber: 1
   });
+  const [isClosing, setIsClosing] = useState(false);
 
   useEffect(() => {
     if (apiKey) {
@@ -130,7 +131,14 @@ export default function App() {
 
     function handleKeyDown(event) {
       if (event.key === "Escape") {
-        setPreviewState((current) => ({ ...current, isOpen: false }));
+        setIsClosing((closing) => {
+          if (closing) return true;
+          setTimeout(() => {
+            setPreviewState((current) => ({ ...current, isOpen: false }));
+            setIsClosing(false);
+          }, 450);
+          return true;
+        });
       }
     }
 
@@ -393,11 +401,16 @@ export default function App() {
   }
 
   function closePdfPreview() {
-    setPreviewState((current) => ({ ...current, isOpen: false }));
+    if (isClosing) return;
+    setIsClosing(true);
+    setTimeout(() => {
+      setPreviewState((current) => ({ ...current, isOpen: false }));
+      setIsClosing(false);
+    }, 450);
   }
 
   return (
-    <div className={`shell ${previewState.isOpen ? "preview-open" : ""}`}>
+    <div className={`shell ${(previewState.isOpen && !isClosing) ? "preview-open" : ""}`}>
       <div className="app-content">
         <header className="hero">
           <div className="hero-copy-block">
@@ -654,8 +667,8 @@ export default function App() {
 
         </section>
       </div>
-      {previewState.isOpen ? (
-        <div className="preview-overlay" role="presentation">
+      {(previewState.isOpen || isClosing) ? (
+        <div className={`preview-overlay ${isClosing ? "is-closing" : "is-open"}`} role="presentation">
           <section className="preview-panel" aria-label="PDF プレビュー">
             <div className="preview-header">
               <div className="preview-header-main">
